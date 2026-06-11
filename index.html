@@ -54,7 +54,7 @@
         .hud-turn { grid-column: span 4; background: rgba(231, 76, 60, 0.3); flex-direction: row; font-size: 14px;}
 
         #map-section { flex: 1.5; display: flex; flex-direction: column;}
-        #map { display: grid; grid-template-columns: repeat(10, 1fr); gap: 2px; background: #000; padding: 5px; border-radius: 8px; border: 3px solid var(--panel-border); width: 100%; max-width: 450px; margin: 0 auto; aspect-ratio: 1 / 1; }
+        #map { display: grid; grid-template-columns: repeat(10, 1fr); gap: 2px; background: #000; padding: 5px; border-radius: 8px; border: 3px solid var(--panel-border); width: 100%; max-width: 450px; margin: 0 auto; aspect-ratio: 1 / 1; transition: 0.3s;}
         .cell { width: 100%; height: 100%; border-radius: 2px; cursor: pointer; }
         
         .type-city { background-color: var(--city); background-image: radial-gradient(#95a5a6 15%, transparent 16%), radial-gradient(#95a5a6 15%, transparent 16%); background-size: 15px 15px;}
@@ -70,19 +70,43 @@
         .legend-item { display: flex; align-items: center; gap: 4px; }
         .color-sample { width: 10px; height: 10px; border-radius: 2px; }
 
-        #controls { flex: 1; display: flex; flex-direction: column; gap: 10px; min-width: 250px;}
-        #action-buttons { display: grid; grid-template-columns: 1fr; gap: 6px; }
+        #controls { flex: 1; display: flex; flex-direction: column; gap: 10px; min-width: 250px; transition: 0.3s;}
+        #action-buttons { display: grid; grid-template-columns: 1fr; gap: 6px; border-radius: 8px; transition: 0.3s;}
 
         .action-btn { background: #7f8c8d; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; text-align: center; transition: 0.2s;}
         .action-btn.active { background: #f39c12; color: #000; box-shadow: inset 0 0 5px #000;}
         .action-btn.disabled { opacity: 0.4; cursor: not-allowed; background: #555 !important;}
         
-        .end-turn { background: var(--hardcore); font-size: 14px; padding: 12px; animation: pulse 2s infinite;}
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); } 100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); } }
+        .end-turn { background: var(--hardcore); font-size: 14px; padding: 12px; transition: 0.3s;}
 
         #log-box { background: #000; color: #2ecc71; padding: 10px; height: 80px; flex-grow: 1; overflow-y: auto; border-radius: 8px; font-family: monospace; font-size: 11px; border: 1px solid #2ecc71; }
         .stat-warning { color: #e74c3c !important; font-weight: bold; animation: blink 1s infinite;}
         @keyframes blink { 50% { opacity: 0.3; } }
+
+        /* Animações do Tutorial */
+        @keyframes glow-pulse {
+            0% { box-shadow: 0 0 5px #f1c40f, inset 0 0 5px #f1c40f; transform: scale(1); }
+            50% { box-shadow: 0 0 25px #f1c40f, inset 0 0 10px #f1c40f; transform: scale(1.02); }
+            100% { box-shadow: 0 0 5px #f1c40f, inset 0 0 5px #f1c40f; transform: scale(1); }
+        }
+        .tutorial-glow {
+            animation: glow-pulse 1.5s infinite !important;
+            border: 2px solid #f1c40f !important;
+            z-index: 10;
+        }
+        #tutorial-banner {
+            display: none;
+            background: #f39c12;
+            color: #000;
+            text-align: center;
+            padding: 15px;
+            font-weight: bold;
+            font-size: 14px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            width: 100%;
+        }
 
         /* Modal Overlays */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 100; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
@@ -123,10 +147,10 @@
             <ul><li><b>Acesso à Terra:</b> Máximo 12 áreas.</li><li><b>Ações Únicas:</b> <i>Sementes Crioulas</i> (Recupera a natureza). <i>Marcha Popular</i> (Garante apoio social).</li></ul>
 
             <h3>🚜 Agricultura Familiar (Médio)</h3>
-            <ul><li><b>Acesso à Terra:</b> Máximo 25 áreas.</li><li><b>Ações Únicas:</b> <i>Vender PNAE (Merenda)</i> (Alimenta muito a cidade). <i>Trator</i> (Aumenta o lucro de tudo permanentemente).</li></ul>
+            <ul><li><b>Acesso à Terra:</b> Máximo 25 áreas.</li><li><b>Ações Únicas:</b> <i>Vender PNAE (Merenda)</i> (Alimenta muito a cidade). <i>Trator</i> (Aumenta o lucro permanentemente).</li></ul>
 
             <h3>🏭 Agronegócio (Latifúndio)</h3>
-            <ul><li><b>Acesso à Terra:</b> Ilimitado.</li><li><b>Ações Únicas:</b> <i>Grilagem</i> (Rouba florestas de graça, mas gera fúria). <i>Pulverização Aérea</i> (Aumenta os lucros mas destrói o ambiente).</li></ul>
+            <ul><li><b>Acesso à Terra:</b> Ilimitado.</li><li><b>Ações Únicas:</b> <i>Grilagem</i> (Rouba florestas, gera fúria). <i>Pulverização Aérea</i> (Aumenta lucros, destrói o ambiente).</li></ul>
         </div>
         <button class="btn-voltar" onclick="openScreen('main-menu')">VOLTAR</button>
     </div>
@@ -140,6 +164,8 @@
     </div>
 
     <div id="game-container" class="screen">
+        <div id="tutorial-banner">💡 TUTORIAL: Iniciando...</div>
+
         <div id="map-section">
             <div id="hud">
                 <div class="hud-item">💰 <span id="ui-money">0</span></div>
@@ -196,7 +222,8 @@
         const state = {
             faction: '', money: 0, sustainability: 100, urbanFood: 100, popularSupport: 50, turn: 1,
             map: [], selectedAction: null, permMultiplier: 0, eventMultiplier: 1, eventPenalty: 1,
-            lockedActionId: null, turnSummary: []
+            lockedActionId: null, turnSummary: [], 
+            isTutorial: false, tutStep: 0 // Controle do Tutorial Animado
         };
 
         const mapSize = 10;
@@ -266,6 +293,37 @@
             openScreen('game-container');
             generateMap(); renderMap(); setupControls(); updateHUD();
             log(`Modo Estratégico: ${selectedFaction.toUpperCase()}`);
+
+            // INICIA O TUTORIAL NA PRIMEIRA RODADA
+            state.isTutorial = true;
+            state.tutStep = 1;
+            document.getElementById('tutorial-banner').style.display = 'block';
+            updateTutorialAnim();
+        }
+
+        // FUNÇÃO DE ANIMAÇÃO DO TUTORIAL
+        function updateTutorialAnim() {
+            if(!state.isTutorial) return;
+            const banner = document.getElementById('tutorial-banner');
+            
+            // Limpa as animações antigas
+            document.getElementById('action-buttons').classList.remove('tutorial-glow');
+            document.getElementById('map').classList.remove('tutorial-glow');
+            document.getElementById('btn-end').classList.remove('tutorial-glow');
+
+            if(state.tutStep === 1) {
+                banner.innerHTML = "💡 TUTORIAL (1/3): Escolha a ação <b>Plantar</b> no menu lateral para começar.";
+                document.getElementById('action-buttons').classList.add('tutorial-glow');
+            } else if(state.tutStep === 2) {
+                banner.innerHTML = "💡 TUTORIAL (2/3): Agora clique em uma <b>Terra Vazia (Laranja)</b> no mapa para aplicar a semente!";
+                document.getElementById('map').classList.add('tutorial-glow');
+            } else if(state.tutStep === 3) {
+                banner.innerHTML = "💡 TUTORIAL (3/3): Ação Registrada! Por fim, clique no botão <b>Passar o Mês</b> para colher os resultados.";
+                document.getElementById('btn-end').classList.add('tutorial-glow');
+            } else {
+                state.isTutorial = false;
+                banner.style.display = 'none';
+            }
         }
 
         function generateMap() {
@@ -296,10 +354,9 @@
                 const btn = document.createElement('button');
                 btn.className = 'action-btn'; 
                 btn.innerText = act.name;
-                btn.dataset.id = act.id; // Salva o ID no botão
+                btn.dataset.id = act.id;
 
                 btn.onclick = () => {
-                    // Verifica se o jogador já escolheu uma ação diferente neste turno
                     if (state.lockedActionId && state.lockedActionId !== act.id) { 
                         log(`🛑 Foco já definido! Você não pode trocar para "${act.name}" neste mês.`); 
                         return; 
@@ -310,15 +367,26 @@
                     if (act.tool) { 
                         state.selectedAction = act; 
                         btn.classList.add('active'); 
-                        // Não trancamos o ID ainda. Só tranca quando ele CLICAR no mapa.
+
+                        // Avança Tutorial se escolheu ferramenta
+                        if(state.isTutorial && state.tutStep === 1) {
+                            state.tutStep = 2;
+                            updateTutorialAnim();
+                        }
                     } 
                     else if (act.effect) {
                         if (state.money >= act.cost) { 
                             let result = act.effect();
                             if (result !== false) {
                                 state.money -= act.cost; 
-                                state.lockedActionId = act.id; // Tranca a ação!
+                                state.lockedActionId = act.id; 
                                 updateHUD();
+
+                                // Avança Tutorial pulando a parte do mapa (já que foi um efeito direto)
+                                if(state.isTutorial && state.tutStep === 1) {
+                                    state.tutStep = 3;
+                                    updateTutorialAnim();
+                                }
                             }
                         } 
                         else { log("❌ Dinheiro insuficiente para esta habilidade."); }
@@ -341,13 +409,16 @@
 
             if (state.money < act.cost && act.cost > 0) { log("❌ Sem Dinheiro."); return; }
 
+            let successAction = false;
+
             if (act.tool === 'grilagem') {
                 if (currentType === 'forest') {
                     state.map[index] = 'agro';
                     state.sustainability -= 12;
                     state.popularSupport -= 10;
                     log(`⚠️ GRILAGEM! Terras roubadas. Povo furioso.`);
-                    state.lockedActionId = act.id; // Tranca a ação
+                    state.lockedActionId = act.id;
+                    successAction = true;
                 } else {
                     log("⚠️ A grilagem só serve para invadir Florestas Verdes.");
                     return;
@@ -364,7 +435,8 @@
                     state.map[index] = act.tool; 
                     state.money -= act.cost; 
                     log(`✔ Terra plantada/trabalhada.`); 
-                    state.lockedActionId = act.id; // Tranca a ação
+                    state.lockedActionId = act.id; 
+                    successAction = true;
                 } 
                 else { log("⚠️ Trabalhe apenas em Terras Laranjas (Vazias/Preparadas)."); return; }
             } 
@@ -375,14 +447,21 @@
                     state.sustainability -= 8; 
                     state.popularSupport -= 4; 
                     log(`🪓 Trator passou. Floresta virou terra vazia.`); 
-                    state.lockedActionId = act.id; // Tranca a ação
+                    state.lockedActionId = act.id;
+                    successAction = true;
                 } 
                 else { log("⚠️ Desmatar só funciona nas Florestas Verdes."); return; }
             }
+
             renderMap(); updateHUD();
+
+            // Avança o Tutorial após ação bem-sucedida no mapa
+            if(successAction && state.isTutorial && state.tutStep === 2) {
+                state.tutStep = 3;
+                updateTutorialAnim();
+            }
         }
 
-        // --- ECONOMIA ---
         function sellDirect() {
             let crops = countTiles('campones');
             if (crops > 0) {
@@ -423,8 +502,13 @@
         function countTiles(type) { return state.map.filter(c => c === type).length; }
         function clearTiles(type) { state.map.forEach((cell, i) => { if (cell === type) state.map[i] = 'empty'; }); }
 
-        // --- SISTEMA DE TURNOS ---
         function processTurnEnd() { 
+            // Fecha Tutorial se clicou em passar turno
+            if(state.isTutorial && state.tutStep === 3) {
+                state.tutStep = 4;
+                updateTutorialAnim();
+            }
+
             Math.random() < 0.35 ? triggerQuiz() : executeTurnEnd(); 
         }
 
@@ -449,14 +533,12 @@
             state.turnSummary = []; 
             state.turn++; state.eventMultiplier = 1; state.eventPenalty = 1;
             
-            // Fome Mensal
             state.urbanFood -= 15; 
             if(state.urbanFood < 45) {
                 state.popularSupport -= 8; 
                 addSummary("⚠️ DESASTRE SOCIAL: A cidade está passando fome crônica! (-Apoio)");
             }
 
-            // Renda Passiva / Efeitos Contínuos
             if (state.faction === 'campones') {
                 let polyCrops = countTiles('campones'); 
                 if(polyCrops > 0) {
@@ -480,7 +562,6 @@
         function closeTurnOverlay() {
             document.getElementById('turn-overlay').style.display = 'none';
             
-            // Libera as ações para o novo turno
             state.lockedActionId = null; 
             state.selectedAction = null; 
             document.querySelectorAll('.action-btn').forEach(b => b.classList.remove('active'));
@@ -518,10 +599,8 @@
             document.getElementById('ui-sust').parentElement.className = state.sustainability <= 30 ? 'hud-item stat-warning' : 'hud-item';
             document.getElementById('ui-support').parentElement.className = state.popularSupport <= 30 ? 'hud-item stat-warning' : 'hud-item';
 
-            // Desativar visualmente os botões que não são a ação trancada
             document.querySelectorAll('.action-btn').forEach(btn => {
                 if(btn.id === 'btn-end') return; 
-                
                 if(state.lockedActionId && btn.dataset.id !== state.lockedActionId) { 
                     btn.classList.add('disabled'); 
                 } else { 

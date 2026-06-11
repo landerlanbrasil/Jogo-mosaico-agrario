@@ -285,4 +285,263 @@
                 const cell = document.createElement('div');
                 cell.className = `cell type-${cellType}`;
                 cell.onclick = () => handleCellClick(index);
-                mapDiv.appe
+                mapDiv.appendChild(cell);
+            });
+        }
+
+        function setupControls() {
+            const container = document.getElementById('action-buttons');
+            container.innerHTML = '';
+            factions[state.faction].actions.forEach(act => {
+                const btn = document.createElement('button');
+                btn.className = 'action-btn'; 
+                btn.innerText = act.name;
+                btn.dataset.id = act.id; // Salva o ID no botão
+
+                btn.onclick = () => {
+                    // Verifica se o jogador já escolheu uma ação diferente neste turno
+                    if (state.lockedActionId && state.lockedActionId !== act.id) { 
+                        log(`🛑 Foco já definido! Você não pode trocar para "${act.name}" neste mês.`); 
+                        return; 
+                    }
+
+                    document.querySelectorAll('.action-btn').forEach(b => b.classList.remove('active'));
+                    
+                    if (act.tool) { 
+                        state.selectedAction = act; 
+                        btn.classList.add('active'); 
+                        // Não trancamos o ID ainda. Só tranca quando ele CLICAR no mapa.
+                    } 
+                    else if (act.effect) {
+                        if (state.money >= act.cost) { 
+                            let result = act.effect();
+                            if (result !== false) {
+                                state.money -= act.cost; 
+                                state.lockedActionId = act.id; // Tranca a ação!
+                                updateHUD();
+                            }
+                        } 
+                        else { log("❌ Dinheiro insuficiente para esta habilidade."); }
+                    }
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        function handleCellClick(index) {
+            if (!state.selectedAction) { log("Selecione uma ação no painel à esquerda."); return; }
+            
+            const act = state.selectedAction; 
+            const currentType = state.map[index];
+
+            if (state.lockedActionId && state.lockedActionId !== act.id) { 
+                log("🛑 Foco já definido! Você não pode usar essa ferramenta agora."); 
+                return; 
+            }
+
+            if (state.money < act.cost && act.cost > 0) { log("❌ Sem Dinheiro."); return; }
+
+            if (act.tool === 'grilagem') {
+                if (currentType === 'forest') {
+                    state.map[index] = 'agro';
+                    state.sustainability -= 12;
+                    state.popularSupport -= 10;
+                    log(`⚠️ GRILAGEM! Terras roubadas. Povo furioso.`);
+                    state.lockedActionId = act.id; // Tranca a ação
+                } else {
+                    log("⚠️ A grilagem só serve para invadir Florestas Verdes.");
+                    return;
+                }
+            }
+            else if (act.tool === 'campones' || act.tool === 'familiar' || act.tool === 'agro') {
+                let limit = factions[state.faction].maxTiles;
+                if (countTiles(act.tool) >= limit) {
+                    log(`🛑 LIMITE DE TERRAS ATINGIDO (${limit}).`);
+                    return;
+                }
+
+                if (currentType === 'empty') { 
+                    state.map[index] = act.tool; 
+                    state.money -= act.cost; 
+                    log(`✔ Terra plantada/trabalhada.`); 
+                    state.lockedActionId = act.id; // Tranca a ação
+                } 
+                else { log("⚠️ Trabalhe apenas em Terras Laranjas (Vazias/Preparadas)."); return; }
+            } 
+            else if (act.tool === 'empty' && state.faction === 'agro') { 
+                if (currentType === 'forest') { 
+                    state.map[index] = 'empty'; 
+                    state.money -= act.cost; 
+                    state.sustainability -= 8; 
+                    state.popularSupport -= 4; 
+                    log(`🪓 Trator passou. Floresta virou terra vazia.`); 
+                    state.lockedActionId = act.id; // Tranca a ação
+                } 
+                else { log("⚠️ Desmatar só funciona nas Florestas Verdes."); return; }
+            }
+            renderMap(); updateHUD();
+        }
+
+        // --- ECONOMIA ---
+        function sellDirect() {
+            let crops = countTiles('campones');
+            if (crops > 0) {
+                clearTiles('campones'); let profit = crops * 40 * (1 + state.permMultiplier) * state.eventMultiplier;
+                state.money += profit; state.urbanFood = Math.min(100, state.urbanFood + (crops * 5)); state.popularSupport = Math.min(100, state.popularSupport + 3);
+                log(`Produtos vendidos na Feira: +R$ ${profit.toFixed(0)}`); renderMap(); return true;
+            } else { log("Nenhuma cultura cresceu o suficiente ainda."); return false; }
+        }
+
+        function sellFood() {
+            let crops = countTiles('familiar');
+            if (crops > 0) {
+                clearTiles('familiar'); let profit = crops * 80 * (1 + state.permMultiplier) * state.eventMultiplier * state.eventPenalty;
+                state.money += profit; state.urbanFood = Math.min(100, state.urbanFood + (crops * 12));
+                log(`Caminhões abasteceram o mercado: +R$ ${profit.toFixed(0)}`); renderMap(); return true;
+            } else { log("Lavouras vazias. Nada a vender."); return false; }
+        }
+
+        function sellPNAE() {
+            let idx = state.map.indexOf('familiar');
+            if (idx > -1) {
+                state.map[idx] = 'empty';
+                let profit = 60 * (1 + state.permMultiplier) * state.eventMultiplier;
+                state.money += profit; state.urbanFood = Math.min(100, state.urbanFood + 25); state.popularSupport = Math.min(100, state.popularSupport + 6);
+                addSummary(`Merenda escolar garantida! Forte impacto na alimentação da cidade.`); renderMap(); return true;
+            } else { log("É preciso pelo menos 1 área de hortaliça plantada para o PNAE."); return false; }
+        }
+
+        function exportAgro() {
+            let crops = countTiles('agro');
+            if (crops > 0) {
+                clearTiles('agro'); let profit = crops * 300 * (1 + state.permMultiplier) * state.eventMultiplier * state.eventPenalty;
+                state.money += profit; state.sustainability -= (crops * 4);
+                log(`Navios carregados. Soja exportada: +R$ ${profit.toFixed(0)}`); renderMap(); return true;
+            } else { log("Nenhuma soja madura para exportação."); return false; }
+        }
+
+        function countTiles(type) { return state.map.filter(c => c === type).length; }
+        function clearTiles(type) { state.map.forEach((cell, i) => { if (cell === type) state.map[i] = 'empty'; }); }
+
+        // --- SISTEMA DE TURNOS ---
+        function processTurnEnd() { 
+            Math.random() < 0.35 ? triggerQuiz() : executeTurnEnd(); 
+        }
+
+        function triggerQuiz() {
+            pendingQuiz = quizzes[Math.floor(Math.random() * quizzes.length)];
+            document.getElementById('quiz-question').innerText = pendingQuiz.q;
+            const optsDiv = document.getElementById('quiz-options'); optsDiv.innerHTML = '';
+            pendingQuiz.options.forEach((opt, idx) => {
+                const btn = document.createElement('button'); btn.className = 'quiz-btn'; btn.innerText = opt;
+                btn.onclick = () => answerQuiz(idx); optsDiv.appendChild(btn);
+            });
+            document.getElementById('quiz-modal').style.display = 'flex';
+        }
+
+        function answerQuiz(selectedIndex) {
+            document.getElementById('quiz-modal').style.display = 'none';
+            if (selectedIndex === pendingQuiz.correct) { pendingQuiz.reward(); } else { addSummary("❌ Falhou no evento de fiscalização/conhecimento."); }
+            pendingQuiz = null; updateHUD(); setTimeout(executeTurnEnd, 500);
+        }
+
+        function executeTurnEnd() {
+            state.turnSummary = []; 
+            state.turn++; state.eventMultiplier = 1; state.eventPenalty = 1;
+            
+            // Fome Mensal
+            state.urbanFood -= 15; 
+            if(state.urbanFood < 45) {
+                state.popularSupport -= 8; 
+                addSummary("⚠️ DESASTRE SOCIAL: A cidade está passando fome crônica! (-Apoio)");
+            }
+
+            // Renda Passiva / Efeitos Contínuos
+            if (state.faction === 'campones') {
+                let polyCrops = countTiles('campones'); 
+                if(polyCrops > 0) {
+                    let calc = polyCrops * 8 * (1 + state.permMultiplier);
+                    state.money += calc;
+                    addSummary(`Renda de Subsistência Mensal gerou R$ ${calc.toFixed(0)}`);
+                }
+            } else if (state.faction === 'agro' && state.sustainability < 40) {
+                state.popularSupport -= 6; 
+                addSummary("⚠️ As manchetes criticam fortemente a destruição ambiental causada por você.");
+            }
+
+            checkEvents(); 
+            
+            if(state.turnSummary.length === 0) { state.turnSummary.push("O mês passou sem grandes intercorrências."); }
+            const textDiv = document.getElementById('turn-summary-text');
+            textDiv.innerHTML = state.turnSummary.map(s => `<li>${s}</li>`).join('');
+            document.getElementById('turn-overlay').style.display = 'flex';
+        }
+
+        function closeTurnOverlay() {
+            document.getElementById('turn-overlay').style.display = 'none';
+            
+            // Libera as ações para o novo turno
+            state.lockedActionId = null; 
+            state.selectedAction = null; 
+            document.querySelectorAll('.action-btn').forEach(b => b.classList.remove('active'));
+            
+            updateHUD(); 
+            checkWinLoss();
+        }
+
+        function checkEvents() {
+            const rand = Math.random();
+            if (rand < 0.15) { addSummary("☀️ Ocorreu uma SECA! A produtividade agrária vai cair."); state.eventPenalty = 0.6; } 
+            else if (rand < 0.30) { addSummary("📈 O dólar subiu! Mercado externo/interno aquecido (Bônus de Dinheiro)."); state.eventMultiplier = 1.4; } 
+            else if (rand < 0.45 && state.faction === 'familiar') { addSummary("🚜 Crédito do PRONAF aprovado pelo governo! (+R$ 200)."); state.money += 200; } 
+            else if (rand < 0.65) {
+                addSummary("🐛 PRAGA NA LAVOURA! Algumas áreas plantadas foram dizimadas.");
+                for(let i=0; i<state.map.length; i++) {
+                    if ((['campones', 'familiar', 'agro'].includes(state.map[i])) && Math.random() < 0.3) { state.map[i] = 'empty'; }
+                }
+                renderMap();
+            }
+        }
+
+        function updateHUD() {
+            document.getElementById('ui-money').innerText = state.money.toFixed(0);
+            document.getElementById('ui-sust').innerText = state.sustainability.toFixed(0);
+            document.getElementById('ui-food').innerText = state.urbanFood.toFixed(0);
+            document.getElementById('ui-support').innerText = state.popularSupport.toFixed(0);
+            document.getElementById('ui-turn').innerText = state.turn;
+
+            let currentTiles = countTiles(state.faction);
+            let maxTilesLimit = factions[state.faction].maxTiles === 999 ? "∞" : factions[state.faction].maxTiles;
+            document.getElementById('ui-terras').innerText = `${currentTiles}/${maxTilesLimit}`;
+
+            document.getElementById('ui-food').parentElement.className = state.urbanFood <= 30 ? 'hud-item stat-warning' : 'hud-item';
+            document.getElementById('ui-sust').parentElement.className = state.sustainability <= 30 ? 'hud-item stat-warning' : 'hud-item';
+            document.getElementById('ui-support').parentElement.className = state.popularSupport <= 30 ? 'hud-item stat-warning' : 'hud-item';
+
+            // Desativar visualmente os botões que não são a ação trancada
+            document.querySelectorAll('.action-btn').forEach(btn => {
+                if(btn.id === 'btn-end') return; 
+                
+                if(state.lockedActionId && btn.dataset.id !== state.lockedActionId) { 
+                    btn.classList.add('disabled'); 
+                } else { 
+                    btn.classList.remove('disabled'); 
+                }
+            });
+        }
+
+        function checkWinLoss() {
+            if (state.urbanFood <= 0) { alert("GAME OVER: A cidade entrou em colapso completo por inanição."); openScreen('main-menu'); } 
+            else if (state.sustainability <= 0) { alert("GAME OVER: Desastre irreversível. O solo virou areia e os rios secaram."); openScreen('main-menu'); } 
+            else if (state.popularSupport <= 0) { alert("GAME OVER: O povo se revoltou e sua facção perdeu o controle da região."); openScreen('main-menu'); } 
+            else if (factions[state.faction].winCondition()) { alert(`🏆 FIM DE JOGO! A matriz ${state.faction.toUpperCase()} venceu a disputa pela terra!`); openScreen('main-menu'); }
+        }
+
+        function log(msg) {
+            const box = document.getElementById('log-box');
+            box.innerHTML += `<div style="margin-bottom: 5px;">[Turno ${state.turn}] ${msg}</div>`;
+            box.scrollTop = box.scrollHeight;
+        }
+    </script>
+</body>
+</html>

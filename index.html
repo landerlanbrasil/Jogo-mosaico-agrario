@@ -1,11 +1,8 @@
-Aqui está uma versão completamente reformulada e expandida do seu jogo. Eu melhorei a interface gráfica, adicionei a **Legenda do Mosaico**, criei um sistema de **Quiz Aleatório** que aparece entre os turnos com perguntas sobre geografia agrária (dando bônus se o jogador acertar), e adicionei um novo status de **Apoio Popular** para deixar a gestão mais profunda.
-Copie e cole o código abaixo em um arquivo .html e abra no seu navegador para jogar:
-```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mosaico Agrário: Disputa de Terras</title>
     <style>
         :root {
@@ -28,47 +25,77 @@ Copie e cole o código abaixo em um arquivo .html e abra no seu navegador para j
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
-            padding: 20px;
+            padding: 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
         }
 
         h1 { 
-            margin-top: 0; 
+            margin-top: 10px; 
             text-align: center; 
             color: #f39c12;
             text-transform: uppercase;
             letter-spacing: 2px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            font-size: clamp(20px, 5vw, 32px);
         }
 
-        /* Menus e Telas */
-        #menu, #game-container {
+        /* Estrutura de Telas (Menus e Jogo) */
+        .screen {
             background: var(--panel-bg);
-            padding: 30px;
+            padding: 20px;
             border-radius: 12px;
             box-shadow: 0 8px 15px rgba(0,0,0,0.5);
             border: 2px solid var(--panel-border);
             max-width: 1100px;
             width: 100%;
             box-sizing: border-box;
+            display: none;
         }
 
-        #game-container {
-            display: none;
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        #game-container.active {
             flex-direction: row;
-            gap: 25px;
+            gap: 20px;
             justify-content: space-between;
         }
 
-        /* Botões Iniciais */
+        /* Botões Iniciais e Menu */
+        .menu-title { text-align: center; margin-bottom: 20px; }
+        .menu-desc { text-align: center; color: #bdc3c7; margin-bottom: 30px; font-size: clamp(14px, 3vw, 16px); }
+
+        .btn-main {
+            display: block;
+            width: 100%;
+            max-width: 400px;
+            margin: 10px auto;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            background: var(--accent);
+            color: white;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        .btn-main:hover { background: #8e44ad; transform: translateY(-2px); }
+
         .faction-btn {
             display: block;
             width: 100%;
-            margin: 15px 0;
-            padding: 18px;
-            font-size: 18px;
+            margin: 10px 0;
+            padding: 15px;
+            font-size: clamp(14px, 4vw, 18px);
             font-weight: bold;
             cursor: pointer;
             border: none;
@@ -76,58 +103,62 @@ Copie e cole o código abaixo em um arquivo .html e abra no seu navegador para j
             color: white;
             transition: all 0.3s;
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            text-align: left;
         }
         #btn-camp { background-color: var(--campones); color: #1e272e; }
         #btn-fam { background-color: var(--familiar); color: #1e272e; }
         #btn-agro { background-color: var(--agro); }
-        .faction-btn:hover { transform: translateY(-3px); filter: brightness(1.1); box-shadow: 0 6px 12px rgba(0,0,0,0.4);}
+        .faction-btn:active { transform: scale(0.98); }
 
         /* HUD Status */
         #hud {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
+            gap: 10px;
             background: #1a252f;
-            padding: 15px;
+            padding: 10px;
             border-radius: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             font-weight: bold;
-            font-size: 16px;
+            font-size: clamp(12px, 3vw, 16px);
         }
 
         .hud-item {
             background: rgba(255,255,255,0.05);
-            padding: 10px;
+            padding: 8px;
             border-radius: 5px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: center;
+            gap: 5px;
+            text-align: center;
         }
 
-        /* Mapa e Células */
-        #map-section { flex: 2; }
+        /* Mapa Responsivo */
+        #map-section { flex: 2; display: flex; flex-direction: column;}
         
         #map {
             display: grid;
-            grid-template-columns: repeat(10, 45px);
-            grid-template-rows: repeat(10, 45px);
-            gap: 3px;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 2px;
             background: #000;
-            padding: 10px;
-            border-radius: 10px;
-            justify-content: center;
+            padding: 5px;
+            border-radius: 8px;
             border: 4px solid var(--panel-border);
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            aspect-ratio: 1 / 1; /* Mantém o mapa quadrado perfeitamente */
         }
 
         .cell {
-            width: 45px;
-            height: 45px;
-            border-radius: 4px;
+            width: 100%;
+            height: 100%;
+            border-radius: 3px;
             cursor: pointer;
-            transition: 0.1s;
             position: relative;
         }
-        .cell:hover { transform: scale(1.1); z-index: 10; border: 2px solid white; box-sizing: border-box; box-shadow: 0 0 10px rgba(255,255,255,0.5); }
+        .cell:active { transform: scale(1.1); z-index: 10; border: 2px solid white; box-sizing: border-box; }
 
         .type-city { background-color: var(--city); background-image: radial-gradient(#95a5a6 15%, transparent 16%), radial-gradient(#95a5a6 15%, transparent 16%); background-size: 20px 20px; background-position: 0 0, 10px 10px;}
         .type-port { background-color: var(--port); }
@@ -142,8 +173,8 @@ Copie e cole o código abaixo em um arquivo .html e abra no seu navegador para j
             flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            min-width: 300px;
+            gap: 10px;
+            min-width: 250px;
         }
 
         .action-btn {
@@ -155,49 +186,40 @@ Copie e cole o código abaixo em um arquivo .html e abra no seu navegador para j
             cursor: pointer;
             font-weight: bold;
             font-size: 14px;
-            transition: 0.2s;
             text-align: left;
         }
         .action-btn.active { background: #f39c12; color: #000; box-shadow: 0 0 10px #f39c12;}
-        .action-btn:hover:not(.active) { background: #95a5a6; }
-        
-        .end-turn { 
-            background: var(--accent); 
-            text-align: center; 
-            font-size: 16px; 
-            margin-top: auto; 
-            padding: 15px;
-        }
-        .end-turn:hover { background: #8e44ad; }
+        .end-turn { background: var(--accent); text-align: center; font-size: 16px; padding: 15px;}
+        .btn-voltar { background: #e74c3c; text-align: center; font-size: 14px; padding: 10px; margin-top: auto;}
 
         #log-box {
             background: #000;
             color: #2ecc71;
-            padding: 15px;
-            height: 200px;
+            padding: 10px;
+            height: 150px;
             overflow-y: auto;
             border-radius: 8px;
             font-family: 'Courier New', Courier, monospace;
-            font-size: 13px;
+            font-size: 12px;
             border: 1px solid #2ecc71;
         }
 
-        /* Legenda */
+        /* Legenda Responsiva */
         .legend-box {
             background: #1a252f;
-            padding: 15px;
+            padding: 10px;
             border-radius: 8px;
-            margin-top: 20px;
+            margin-top: 15px;
         }
-        .legend-box h3 { margin-top: 0; font-size: 16px; margin-bottom: 10px; color: #bdc3c7;}
+        .legend-box h3 { margin-top: 0; font-size: 14px; margin-bottom: 8px; color: #bdc3c7;}
         .legend-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            font-size: 13px;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 5px;
+            font-size: 11px;
         }
-        .legend-item { display: flex; align-items: center; gap: 8px; }
-        .color-sample { width: 15px; height: 15px; border-radius: 3px; }
+        .legend-item { display: flex; align-items: center; gap: 5px; }
+        .color-sample { width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0;}
 
         .stat-warning { color: #e74c3c; font-weight: bold; animation: blink 1s infinite;}
         @keyframes blink { 50% { opacity: 0.3; } }
@@ -207,68 +229,92 @@ Copie e cole o código abaixo em um arquivo .html e abra no seu navegador para j
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.9);
             z-index: 100;
             justify-content: center;
             align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
         }
         .quiz-content {
             background: var(--panel-bg);
-            padding: 30px;
+            padding: 20px;
             border-radius: 10px;
             max-width: 500px;
+            width: 100%;
             text-align: center;
             border: 2px solid var(--familiar);
-            box-shadow: 0 0 20px rgba(241, 196, 15, 0.4);
         }
-        .quiz-content h2 { color: var(--familiar); margin-top: 0; }
         .quiz-btn {
             display: block;
             width: 100%;
-            margin: 10px 0;
-            padding: 12px;
+            margin: 8px 0;
+            padding: 15px;
             background: #34495e;
             color: white;
             border: 1px solid #7f8c8d;
             border-radius: 5px;
             cursor: pointer;
-            transition: 0.2s;
+            font-size: 14px;
         }
-        .quiz-btn:hover { background: #2c3e50; border-color: white;}
+
+        /* ADAPTAÇÃO PARA CELULARES E TABLETS */
+        @media (max-width: 800px) {
+            #game-container.active {
+                flex-direction: column;
+            }
+            .action-btn {
+                padding: 15px; /* Alvo de toque maior */
+                font-size: 16px;
+            }
+            #hud {
+                grid-template-columns: 1fr 1fr;
+            }
+            h1 { margin-bottom: 10px; }
+        }
     </style>
 </head>
 <body>
 
-    <h1>Mosaico Agrário: O Desafio</h1>
+    <h1>Mosaico Agrário</h1>
     
-    <div id="menu">
-        <h2 style="text-align: center;">Escolha sua Matriz Produtiva</h2>
-        <p style="text-align: center; color: #bdc3c7; margin-bottom: 30px;">Domine o uso da terra. Cada facção possui dinâmicas, vantagens e objetivos únicos. Equilibre economia, sociedade e meio ambiente.</p>
+    <div id="main-menu" class="screen active">
+        <h2 class="menu-title">Bem-vindo ao Desafio</h2>
+        <p class="menu-desc">Administre territórios, gerencie a economia, a alimentação urbana e a preservação ambiental do Mosaico.</p>
+        <button class="btn-main" onclick="openScreen('faction-menu')">▶ INICIAR JOGO</button>
+        <button class="btn-main" style="background:#34495e;" onclick="alert('Regras:\n1. Plante para ganhar dinheiro.\n2. Cuidado com a fome da cidade e a sustentabilidade.\n3. Responda os Quizzes para ganhar bônus!')">📖 COMO JOGAR</button>
+    </div>
+
+    <div id="faction-menu" class="screen">
+        <h2 class="menu-title">Escolha sua Matriz Produtiva</h2>
+        <p class="menu-desc">Cada facção possui dinâmicas, vantagens e objetivos únicos.</p>
         
         <button id="btn-camp" class="faction-btn" onclick="startGame('campones')">
             👨‍🌾 Movimento Camponês<br>
-            <small style="font-weight: normal;">Foco: Policultura e Sustentabilidade. (Objetivo: $500, 90% Sustentabilidade, 70% Apoio Popular)</small>
+            <small style="font-weight: normal;">Foco: Policultura e Sustentabilidade. (Objetivo: $500, 90% Sust., 70% Apoio)</small>
         </button>
         
         <button id="btn-fam" class="faction-btn" onclick="startGame('familiar')">
             🚜 Agricultura Familiar<br>
-            <small style="font-weight: normal;">Foco: Abastecimento do Mercado Interno. (Objetivo: $3.000, 90% Abastecimento)</small>
+            <small style="font-weight: normal;">Foco: Abastecimento do Mercado Interno. (Objetivo: $3.000, 90% Alimento)</small>
         </button>
         
         <button id="btn-agro" class="faction-btn" onclick="startGame('agro')">
             🏭 Agronegócio de Exportação<br>
             <small style="font-weight: normal;">Foco: Monocultura, Desmatamento e Capital. (Objetivo: $25.000)</small>
         </button>
+
+        <button class="btn-voltar" style="max-width: 200px; margin: 20px auto 0;" onclick="openScreen('main-menu')">Voltar</button>
     </div>
 
-    <div id="game-container">
+    <div id="game-container" class="screen">
         <div id="map-section">
             <div id="hud">
-                <div class="hud-item">💰 Caixa: R$ <span id="ui-money">0</span></div>
-                <div class="hud-item">🌿 Natureza: <span id="ui-sust">100</span>%</div>
-                <div class="hud-item">🏙️ Comida: <span id="ui-food">100</span>%</div>
-                <div class="hud-item">🤝 Apoio: <span id="ui-support">50</span>%</div>
-                <div class="hud-item" style="grid-column: span 2; justify-content: center; background: rgba(155, 89, 182, 0.2);">
+                <div class="hud-item">💰 R$ <span id="ui-money">0</span></div>
+                <div class="hud-item">🌿 Sustent. <span id="ui-sust">100</span>%</div>
+                <div class="hud-item">🏙️ Comida <span id="ui-food">100</span>%</div>
+                <div class="hud-item">🤝 Apoio <span id="ui-support">50</span>%</div>
+                <div class="hud-item" style="grid-column: span 2; background: rgba(155, 89, 182, 0.2);">
                     ⏳ Turno: <span id="ui-turn">1</span>
                 </div>
             </div>
@@ -276,40 +322,53 @@ Copie e cole o código abaixo em um arquivo .html e abra no seu navegador para j
             <div id="map"></div>
 
             <div class="legend-box">
-                <h3>Legenda do Mosaico</h3>
+                <h3>Legenda</h3>
                 <div class="legend-grid">
-                    <div class="legend-item"><div class="color-sample" style="background: var(--city);"></div> Cidade (Consome Alimentos)</div>
-                    <div class="legend-item"><div class="color-sample" style="background: var(--port);"></div> Porto (Via de Exportação)</div>
-                    <div class="legend-item"><div class="color-sample" style="background: var(--forest);"></div> Floresta Virgem</div>
-                    <div class="legend-item"><div class="color-sample" style="background: var(--empty);"></div> Terra Preparada / Vazia</div>
-                    <div class="legend-item"><div class="color-sample" style="background: var(--campones);"></div> Policultura (Camponês)</div>
-                    <div class="legend-item"><div class="color-sample" style="background: var(--familiar);"></div> Hortaliças (Familiar)</div>
-                    <div class="legend-item"><div class="color-sample" style="background: var(--agro);"></div> Monocultura Soja (Agro)</div>
+                    <div class="legend-item"><div class="color-sample" style="background: var(--city);"></div> Cidade</div>
+                    <div class="legend-item"><div class="color-sample" style="background: var(--port);"></div> Porto</div>
+                    <div class="legend-item"><div class="color-sample" style="background: var(--forest);"></div> Floresta</div>
+                    <div class="legend-item"><div class="color-sample" style="background: var(--empty);"></div> Terra Preparada</div>
+                    <div class="legend-item"><div class="color-sample" style="background: var(--campones);"></div> Policultura</div>
+                    <div class="legend-item"><div class="color-sample" style="background: var(--familiar);"></div> Hortaliças</div>
+                    <div class="legend-item"><div class="color-sample" style="background: var(--agro);"></div> Soja</div>
                 </div>
             </div>
         </div>
 
         <div id="controls">
-            <h3 style="margin-top: 0; color: #f39c12;">Ações Disponíveis</h3>
+            <h3 style="margin-top: 0; color: #f39c12; font-size: 16px;">Ações Disponíveis</h3>
             <div id="action-buttons" style="display: flex; flex-direction: column; gap: 10px;"></div>
             
             <button class="action-btn end-turn" onclick="processTurnEnd()">Encerrar Turno ⏳</button>
             
-            <h3 style="margin-bottom: 0;">Log de Eventos</h3>
+            <h3 style="margin-bottom: 0; margin-top: 10px; font-size: 14px;">Log de Eventos</h3>
             <div id="log-box"></div>
+
+            <button class="action-btn btn-voltar" onclick="openScreen('main-menu')">Abandonar Partida / Menu</button>
         </div>
     </div>
 
-    <!-- Modal do Quiz -->
     <div id="quiz-modal">
         <div class="quiz-content">
-            <h2>❓ Quiz Agrário</h2>
+            <h2 style="color: var(--familiar); margin-top: 0;">❓ Quiz Agrário</h2>
             <p id="quiz-question" style="font-weight: bold; margin-bottom: 20px;">Pergunta</p>
             <div id="quiz-options"></div>
         </div>
     </div>
 
     <script>
+        // Sistema de Navegação de Telas
+        function openScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            
+            if(screenId === 'main-menu') {
+                // Reset state var se voltar ao menu principal
+                state.map = []; 
+                document.getElementById('log-box').innerHTML = '';
+            }
+        }
+
         // Game State Core
         const state = {
             faction: '',
@@ -363,7 +422,7 @@ Copie e cole o código abaixo em um arquivo .html e abra no seu navegador para j
                 winCondition: () => state.sustainability >= 90 && state.money >= 500 && state.popularSupport >= 70,
                 actions: [
                     { id: 'plantar', name: '🌱 Plantar Policultura (R$ 10)', cost: 10, tool: 'campones' },
-                    { id: 'mutirao', name: '🤝 Mutirão Agroecológico (R$ 50)', cost: 50, effect: () => { 
+                    { id: 'mutirao', name: '🤝 Mutirão Agro (R$ 50)', cost: 50, effect: () => { 
                         state.sustainability = Math.min(100, state.sustainability + 15); 
                         state.popularSupport = Math.min(100, state.popularSupport + 5);
                         log("Mutirão aumentou sustentabilidade e apoio!"); 
@@ -376,11 +435,11 @@ Copie e cole o código abaixo em um arquivo .html e abra no seu navegador para j
                 winCondition: () => state.money >= 3000 && state.urbanFood >= 90,
                 actions: [
                     { id: 'plantar', name: '🥕 Plantar Hortaliças (R$ 20)', cost: 20, tool: 'familiar' },
-                    { id: 'vender', name: '🚚 Abastecer a Cidade (Vender)', cost: 0, effect: sellFood },
-                    { id: 'cooperativa', name: '🏢 Fundar Cooperativa (R$ 200)', cost: 200, effect: () => {
+                    { id: 'vender', name: '🚚 Abastecer Cidade', cost: 0, effect: sellFood },
+                    { id: 'cooperativa', name: '🏢 Fundar Coop. (R$ 200)', cost: 200, effect: () => {
                         state.popularSupport += 15;
                         state.eventMultiplier += 0.2;
-                        log("Cooperativa fundada! Ganhos permanentemente aumentados.");
+                        log("Cooperativa fundada! Ganhos aumentados.");
                     }}
                 ]
             },
@@ -388,10 +447,10 @@ Copie e cole o código abaixo em um arquivo .html e abra no seu navegador para j
                 startMoney: 5000,
                 winCondition: () => state.money >= 25000,
                 actions: [
-                    { id: 'desmatar', name: '🪓 Comprar/Desmatar Floresta (R$ 150)', cost: 150, tool: 'empty' },
-                    { id: 'plantar', name: '🌾 Plantar Soja Exportação (R$ 80)', cost: 80, tool: 'agro' },
+                    { id: 'desmatar', name: '🪓 Desmatar Floresta (R$ 150)', cost: 150, tool: 'empty' },
+                    { id: 'plantar', name: '🌾 Plantar Soja (R$ 80)', cost: 80, tool: 'agro' },
                     { id: 'exportar', name: '🚢 Escoar pelo Porto', cost: 0, effect: exportAgro },
-                    { id: 'lobby', name: '💼 Fazer Lobby Político (R$ 500)', cost: 500, effect: () => {
+                    { id: 'lobby', name: '💼 Fazer Lobby (R$ 500)', cost: 500, effect: () => {
                         state.popularSupport = Math.min(100, state.popularSupport + 20);
                         log("Lobby feito. A mídia aprova seu negócio (+Apoio).");
                     }}
@@ -402,20 +461,26 @@ Copie e cole o código abaixo em um arquivo .html e abra no seu navegador para j
         function startGame(selectedFaction) {
             state.faction = selectedFaction;
             state.money = factions[selectedFaction].startMoney;
+            state.sustainability = 100;
+            state.urbanFood = 100;
+            state.turn = 1;
+            state.map = [];
+            state.selectedAction = null;
+            state.eventMultiplier = 1;
+            state.eventPenalty = 1;
+            document.getElementById('log-box').innerHTML = '';
             
-            // Adjust starting stats based on faction
             if(selectedFaction === 'agro') { state.popularSupport = 30; }
-            if(selectedFaction === 'campones') { state.popularSupport = 60; }
+            else if(selectedFaction === 'campones') { state.popularSupport = 60; }
+            else { state.popularSupport = 50; }
 
-            document.getElementById('menu').style.display = 'none';
-            document.getElementById('game-container').style.display = 'flex';
+            openScreen('game-container');
             
             generateMap();
             renderMap();
             setupControls();
             updateHUD();
             log(`Jogo iniciado: ${selectedFaction.toUpperCase()}.`);
-            log("Objetivo: Consulte as regras e sobreviva à passagem do tempo.");
         }
 
         function generateMap() {
@@ -434,7 +499,6 @@ Copie e cole o código abaixo em um arquivo .html e abra no seu navegador para j
             state.map.forEach((cellType, index) => {
                 const cell = document.createElement('div');
                 cell.className = `cell type-${cellType}`;
-                cell.title = `Área ${index} - Tipo: ${cellType.toUpperCase()}`;
                 cell.onclick = () => handleCellClick(index);
                 mapDiv.appendChild(cell);
             });
@@ -458,7 +522,7 @@ Copie e cole o código abaixo em um arquivo .html e abra no seu navegador para j
                             act.effect();
                             updateHUD();
                         } else {
-                            log("❌ Dinheiro insuficiente para essa ação rápida!");
+                            log("❌ Dinheiro insuficiente.");
                         }
                     }
                 };
@@ -468,7 +532,7 @@ Copie e cole o código abaixo em um arquivo .html e abra no seu navegador para j
 
         function handleCellClick(index) {
             if (!state.selectedAction) {
-                log("Selecione uma ação no painel à direita primeiro.");
+                log("Selecione uma ação abaixo primeiro.");
                 return;
             }
             const act = state.selectedAction;
@@ -483,9 +547,9 @@ Copie e cole o código abaixo em um arquivo .html e abra no seu navegador para j
                 if (currentType === 'empty') {
                     state.map[index] = act.tool;
                     state.money -= act.cost;
-                    log(`✔ Plantou na área ${index}.`);
+                    log(`✔ Plantou na área.`);
                 } else {
-                    log("⚠️ Só é possível plantar em terras Laranjas (Preparadas/Vazias).");
+                    log("⚠️ Só é possível plantar em terras Preparadas/Vazias (Cor Laranja).");
                     return;
                 }
             } else if (act.tool === 'empty' && state.faction === 'agro') { 
@@ -494,9 +558,9 @@ Copie e cole o código abaixo em um arquivo .html e abra no seu navegador para j
                     state.money -= act.cost;
                     state.sustainability -= 6;
                     state.popularSupport -= 2;
-                    log(`🪓 Floresta na área ${index} desmatada. Animais perderam habitat.`);
+                    log(`🪓 Floresta desmatada. Animais perderam habitat.`);
                 } else {
-                    log("⚠️ Ação 'Desmatar' só funciona em Florestas (Verde Escuro).");
+                    log("⚠️ Ação 'Desmatar' só funciona em Florestas.");
                     return;
                 }
             }
@@ -504,7 +568,6 @@ Copie e cole o código abaixo em um arquivo .html e abra no seu navegador para j
             updateHUD();
         }
 
-        // Faction Specific Effects
         function sellDirect() {
             let crops = countTiles('campones');
             if (crops > 0) {
@@ -513,7 +576,7 @@ Copie e cole o código abaixo em um arquivo .html e abra no seu navegador para j
                 state.money += profit;
                 state.urbanFood = Math.min(100, state.urbanFood + (crops * 8));
                 state.popularSupport = Math.min(100, state.popularSupport + 2);
-                log(`Vendou na Feira! Lucro: R$ ${profit.toFixed(0)}`);
+                log(`Vendeu na Feira! Lucro: R$ ${profit.toFixed(0)}`);
                 renderMap();
             } else { log("Nenhuma plantação madura."); }
         }
@@ -537,7 +600,7 @@ Copie e cole o código abaixo em um arquivo .html e abra no seu navegador para j
                 let profit = crops * 350 * state.eventMultiplier * state.eventPenalty;
                 state.money += profit;
                 state.sustainability -= (crops * 3);
-                log(`Navios carregados! Soja exportada. Lucro: R$ ${profit.toFixed(0)}`);
+                log(`Soja exportada. Lucro: R$ ${profit.toFixed(0)}`);
                 renderMap();
             } else { log("Nenhuma soja pronta para exportar."); }
         }
@@ -550,10 +613,8 @@ Copie e cole o código abaixo em um arquivo .html e abra no seu navegador para j
             state.map.forEach((cell, i) => { if (cell === type) state.map[i] = 'empty'; });
         }
 
-        // Turn & Quiz Logic
         function processTurnEnd() {
-            // 40% chance of a Quiz between turns
-            if (Math.random() < 0.40) {
+            if (Math.random() < 0.35) {
                 triggerQuiz();
             } else {
                 executeTurnEnd();
@@ -583,13 +644,11 @@ Copie e cole o código abaixo em um arquivo .html e abra no seu navegador para j
             if (selectedIndex === pendingQuiz.correct) {
                 pendingQuiz.reward();
             } else {
-                log("❌ Errou a pergunta do Quiz. Estude mais a geografia agrária!");
+                log("❌ Errou a pergunta do Quiz.");
             }
             pendingQuiz = null;
             updateHUD();
-            
-            // Pequeno delay para ler o resultado antes de rodar os eventos do turno
-            setTimeout(executeTurnEnd, 1000);
+            setTimeout(executeTurnEnd, 800);
         }
 
         function executeTurnEnd() {
@@ -597,19 +656,17 @@ Copie e cole o código abaixo em um arquivo .html e abra no seu navegador para j
             state.eventMultiplier = 1;
             state.eventPenalty = 1;
             
-            // Desgaste Global
             state.urbanFood -= 12; 
-            if(state.urbanFood < 50) state.popularSupport -= 5; // Fome gera impopularidade
+            if(state.urbanFood < 50) state.popularSupport -= 5; 
 
-            // Passivas
             if (state.faction === 'campones') {
                 let polyCrops = countTiles('campones');
                 state.money += (polyCrops * 20);
-                if(polyCrops > 0) log(`Geração passiva (Policultura): +R$ ${polyCrops*20}`);
+                if(polyCrops > 0) log(`Renda passiva (Policultura): +R$ ${polyCrops*20}`);
             } else if (state.faction === 'agro') {
                 if (state.sustainability < 40) {
                     state.popularSupport -= 5;
-                    log("A poluição gerou protestos civis contra o Agronegócio.");
+                    log("A poluição gerou protestos civis.");
                 }
             }
 
@@ -621,7 +678,7 @@ Copie e cole o código abaixo em um arquivo .html e abra no seu navegador para j
         function checkEvents() {
             const rand = Math.random();
             if (rand < 0.20) {
-                log("☀️ EVENTO: Seca Prolongada! Produtividade cai na próxima colheita.");
+                log("☀️ EVENTO: Seca! Produtividade cai na próxima colheita.");
                 state.eventPenalty = (state.faction === 'campones') ? 0.9 : 0.6; 
             } else if (rand < 0.40) {
                 log("📈 EVENTO: Mercado Aquecido! Vendas e Exportações darão bônus.");
@@ -630,7 +687,7 @@ Copie e cole o código abaixo em um arquivo .html e abra no seu navegador para j
                 log("🚜 EVENTO: Pronaf Liberado! Subsídio na conta.");
                 state.money += 400;
             } else if (rand < 0.70) {
-                log("🐛 EVENTO: Nuvem de Gafanhotos! Áreas destruídas.");
+                log("🐛 EVENTO: Pragas! Áreas destruídas.");
                 for(let i=0; i<state.map.length; i++) {
                     if ((state.map[i] === 'campones' || state.map[i] === 'familiar' || state.map[i] === 'agro') && Math.random() < 0.4) {
                         state.map[i] = 'empty';
@@ -655,30 +712,24 @@ Copie e cole o código abaixo em um arquivo .html e abra no seu navegador para j
         function checkWinLoss() {
             if (state.urbanFood <= 0) {
                 alert("GAME OVER: A cidade colapsou de fome. Revolta generalizada.");
-                location.reload();
-            }
-            if (state.sustainability <= 0) {
-                alert("GAME OVER: O ecossistema foi obliterado. Tempestades de areia tornaram a terra estéril.");
-                location.reload();
-            }
-            if (state.popularSupport <= 0) {
-                alert("GAME OVER: Zero apoio popular. Sua facção foi expulsa politicamente da região.");
-                location.reload();
-            }
-            
-            if (factions[state.faction].winCondition()) {
-                alert(`🏆 VITÓRIA MAGNÍFICA! A matriz ${state.faction.toUpperCase()} provou ser a dona do Mosaico Agrário!`);
-                location.reload();
+                openScreen('main-menu');
+            } else if (state.sustainability <= 0) {
+                alert("GAME OVER: O ecossistema foi obliterado. A terra ficou estéril.");
+                openScreen('main-menu');
+            } else if (state.popularSupport <= 0) {
+                alert("GAME OVER: Zero apoio popular. Sua facção foi expulsa da região.");
+                openScreen('main-menu');
+            } else if (factions[state.faction].winCondition()) {
+                alert(`🏆 VITÓRIA! A matriz ${state.faction.toUpperCase()} provou ser a dona do Mosaico!`);
+                openScreen('main-menu');
             }
         }
 
         function log(msg) {
             const box = document.getElementById('log-box');
-            box.innerHTML += `<div style="margin-bottom: 5px;">[T${state.turn}] ${msg}</div>`;
+            box.innerHTML += `<div style="margin-bottom: 5px; padding-bottom: 5px; border-bottom: 1px solid #111;">[T${state.turn}] ${msg}</div>`;
             box.scrollTop = box.scrollHeight;
         }
     </script>
 </body>
 </html>
-
-```

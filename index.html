@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mosaico Agrário: Disputa de Terras (Modo Difícil)</title>
+    <title>Mosaico Agrário: Disputa de Terras (Modo Realista)</title>
     <style>
         :root {
             --bg-color: #1e272e;
@@ -46,7 +46,6 @@
         }
         .subtitle { color: #bdc3c7; font-size: 12px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 3px; font-weight: bold;}
 
-        /* Estrutura de Telas */
         .screen {
             background: var(--panel-bg);
             padding: 15px;
@@ -67,42 +66,21 @@
             justify-content: space-between;
         }
 
-        /* Menus Principais */
         .menu-title { text-align: center; margin-top: 0; margin-bottom: 15px; font-size: 24px;}
         .menu-desc { text-align: center; color: #bdc3c7; margin-bottom: 20px; font-size: clamp(14px, 3vw, 16px); }
 
         .btn-main {
-            display: block;
-            width: 100%;
-            max-width: 350px;
-            margin: 8px auto;
-            padding: 15px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            border: none;
-            border-radius: 8px;
-            background: var(--accent);
-            color: white;
-            transition: all 0.2s;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            display: block; width: 100%; max-width: 350px; margin: 8px auto; padding: 15px;
+            font-size: 16px; font-weight: bold; cursor: pointer; border: none; border-radius: 8px;
+            background: var(--accent); color: white; transition: all 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.3);
             text-align: center;
         }
         .btn-main:active { transform: scale(0.98); }
 
         .faction-btn {
-            display: block;
-            width: 100%;
-            margin: 8px 0;
-            padding: 15px;
-            font-size: clamp(14px, 4vw, 16px);
-            font-weight: bold;
-            cursor: pointer;
-            border: none;
-            border-radius: 8px;
-            color: white;
-            transition: all 0.3s;
-            text-align: left;
+            display: block; width: 100%; margin: 8px 0; padding: 15px;
+            font-size: clamp(14px, 4vw, 16px); font-weight: bold; cursor: pointer; border: none;
+            border-radius: 8px; color: white; transition: all 0.3s; text-align: left;
         }
         #btn-camp { background-color: var(--campones); color: #1e272e; }
         #btn-fam { background-color: var(--familiar); color: #1e272e; }
@@ -110,54 +88,31 @@
 
         .btn-voltar { background: #e74c3c; text-align: center; padding: 12px; margin-top: 15px; border:none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer;}
 
-        /* Tela de Tutorial */
         .tutorial-content { max-height: 60vh; overflow-y: auto; padding-right: 10px; font-size: 14px; line-height: 1.5; color: #ecf0f1; margin-bottom: 15px;}
         .tutorial-content h3 { color: #f39c12; margin-bottom: 5px; border-bottom: 1px solid #7f8c8d; padding-bottom: 5px;}
         .tutorial-content h4 { color: #3498db; margin-bottom: 3px; margin-top: 15px;}
         .tutorial-content ul { margin-top: 5px; padding-left: 20px;}
         .tutorial-content li { margin-bottom: 5px;}
 
-        /* HUD Status */
         #hud {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 5px;
-            background: #1a252f;
-            padding: 10px;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            font-weight: bold;
-            font-size: clamp(11px, 2.5vw, 14px);
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px;
+            background: #1a252f; padding: 10px; border-radius: 10px; margin-bottom: 10px;
+            font-weight: bold; font-size: clamp(11px, 2.5vw, 14px);
         }
 
         .hud-item {
-            background: rgba(255,255,255,0.05);
-            padding: 6px;
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 3px;
-            text-align: center;
-            flex-direction: column;
+            background: rgba(255,255,255,0.05); padding: 6px; border-radius: 5px;
+            display: flex; align-items: center; justify-content: center; gap: 3px;
+            text-align: center; flex-direction: column;
         }
         .hud-turn { grid-column: span 4; background: rgba(231, 76, 60, 0.3); flex-direction: row; font-size: 14px;}
 
-        /* Mapa Responsivo */
         #map-section { flex: 1.5; display: flex; flex-direction: column;}
         
         #map {
-            display: grid;
-            grid-template-columns: repeat(10, 1fr);
-            gap: 2px;
-            background: #000;
-            padding: 5px;
-            border-radius: 8px;
-            border: 3px solid var(--panel-border);
-            width: 100%;
-            max-width: 450px;
-            margin: 0 auto;
-            aspect-ratio: 1 / 1;
+            display: grid; grid-template-columns: repeat(10, 1fr); gap: 2px;
+            background: #000; padding: 5px; border-radius: 8px; border: 3px solid var(--panel-border);
+            width: 100%; max-width: 450px; margin: 0 auto; aspect-ratio: 1 / 1;
         }
 
         .cell { width: 100%; height: 100%; border-radius: 2px; cursor: pointer; }
@@ -171,79 +126,46 @@
         .type-familiar { background-color: var(--familiar); border: 2px solid #f39c12;}
         .type-agro { background-color: var(--agro); border: 2px solid #922b21;}
 
-        /* Legenda Flexível */
         .legend-box { background: #1a252f; padding: 8px; border-radius: 8px; margin-top: 10px; }
         .legend-box h3 { margin: 0 0 5px 0; font-size: 12px; color: #bdc3c7; text-align: center;}
         .legend-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; font-size: 10px; }
         .legend-item { display: flex; align-items: center; gap: 4px; }
         .color-sample { width: 10px; height: 10px; border-radius: 2px; }
 
-        /* Controles e Log */
         #controls { flex: 1; display: flex; flex-direction: column; gap: 10px; min-width: 250px;}
 
-        #action-buttons {
-            display: grid;
-            grid-template-columns: 1fr; 
-            gap: 8px;
-        }
+        #action-buttons { display: grid; grid-template-columns: 1fr; gap: 8px; }
 
         .action-btn {
-            background: #7f8c8d;
-            color: white;
-            border: none;
-            padding: 10px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 12px;
-            text-align: center;
+            background: #7f8c8d; color: white; border: none; padding: 10px; border-radius: 6px;
+            cursor: pointer; font-weight: bold; font-size: 12px; text-align: center;
         }
         .action-btn.active { background: #f39c12; color: #000; box-shadow: inset 0 0 5px #000;}
         .end-turn { background: var(--hardcore); font-size: 14px; padding: 12px;}
 
         #log-box {
-            background: #000;
-            color: #2ecc71;
-            padding: 10px;
-            height: 100px;
-            flex-grow: 1;
-            overflow-y: auto;
-            border-radius: 8px;
-            font-family: monospace;
-            font-size: 11px;
+            background: #000; color: #2ecc71; padding: 10px; height: 100px; flex-grow: 1;
+            overflow-y: auto; border-radius: 8px; font-family: monospace; font-size: 11px;
             border: 1px solid #2ecc71;
         }
 
         .stat-warning { color: #e74c3c !important; font-weight: bold; animation: blink 1s infinite;}
         @keyframes blink { 50% { opacity: 0.3; } }
 
-        /* Modal do Quiz */
         #quiz-modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            z-index: 100;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            box-sizing: border-box;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 100; justify-content: center; align-items: center;
+            padding: 20px; box-sizing: border-box;
         }
         .quiz-content {
-            background: var(--panel-bg);
-            padding: 20px;
-            border-radius: 10px;
-            max-width: 500px;
-            width: 100%;
-            text-align: center;
-            border: 2px solid var(--hardcore);
+            background: var(--panel-bg); padding: 20px; border-radius: 10px; max-width: 500px;
+            width: 100%; text-align: center; border: 2px solid var(--hardcore);
         }
         .quiz-btn {
-            display: block; width: 100%; margin: 8px 0; padding: 12px;
-            background: #34495e; color: white; border: 1px solid #7f8c8d; border-radius: 5px; cursor: pointer;
+            display: block; width: 100%; margin: 8px 0; padding: 12px; background: #34495e;
+            color: white; border: 1px solid #7f8c8d; border-radius: 5px; cursor: pointer;
         }
 
-        /* ADAPTAÇÃO DINÂMICA CELULAR/TABLET */
         @media (max-width: 800px) {
             #game-container.active { flex-direction: column; gap: 10px;}
             #action-buttons { grid-template-columns: 1fr 1fr; } 
@@ -257,41 +179,41 @@
 <body>
 
     <h1>Mosaico Agrário</h1>
-    <div class="subtitle">Modo Sobrevivência (Difícil)</div>
+    <div class="subtitle">A Luta Pela Terra (Realidade)</div>
     
     <div id="main-menu" class="screen active">
-        <h2 class="menu-title">Bem-vindo ao Desafio Real</h2>
-        <p class="menu-desc">Os recursos estão escassos, a cidade consome mais rápido e os desastres naturais são impiedosos. Boa sorte.</p>
+        <h2 class="menu-title">A Dinâmica do Campo</h2>
+        <p class="menu-desc">Entenda a desigualdade fundiária: alguns lutam por pedaços de terra, outros dominam o horizonte.</p>
         <button class="btn-main" onclick="openScreen('faction-menu')">▶ ESCOLHER MATRIZ (JOGAR)</button>
-        <button class="btn-main" style="background:#34495e;" onclick="openScreen('tutorial-menu')">📖 REGRAS DO MODO DIFÍCIL</button>
+        <button class="btn-main" style="background:#34495e;" onclick="openScreen('tutorial-menu')">📖 REGRAS DO MODO REALISTA</button>
     </div>
 
     <div id="tutorial-menu" class="screen">
-        <h2 class="menu-title">Manual de Sobrevivência</h2>
+        <h2 class="menu-title">Manual: Concentração Fundiária</h2>
         <div class="tutorial-content">
-            <h3>📖 Regras Gerais (Atenção!)</h3>
-            <p>A cada turno, a cidade consome <b>18% de alimentos</b> (muito rápido!). O seu objetivo é alcançar as metas da sua facção sem deixar a Natureza, a Comida ou o Apoio Popular chegarem a zero.</p>
-            <p>Para interagir: <b>Clique na ação</b> (ela ficará laranja) e depois <b>clique no quadrado do mapa</b>.</p>
+            <h3>📖 Regras Gerais</h3>
+            <p>A cada turno, a cidade consome <b>18% de alimentos</b>. O seu objetivo é alcançar as metas da sua facção sem deixar a Natureza, a Comida ou o Apoio Popular chegarem a zero.</p>
+            <p><b>NOVIDADE - ACESSO À TERRA:</b> Diferentes matrizes têm diferentes limites de terras, simulando a desigualdade real no Brasil.</p>
 
-            <h3>👨‍🌾 Jogando com o Movimento Camponês</h3>
+            <h3>👨‍🌾 O Movimento Camponês (Minifúndios)</h3>
             <ul>
+                <li><b>Acesso à Terra:</b> <b>MÁXIMO DE 12 ÁREAS.</b> Você é obrigado a produzir muito em pouco espaço (intensivo).</li>
                 <li><b>Foco:</b> Harmonia e aprovação.</li>
-                <li><b>Estratégia:</b> Você começa quase sem dinheiro ($80). Plante rápido para gerar 10$ passivos por turno. Evite destruir a floresta.</li>
-                <li><b>Ferramentas:</b> A "Feira" troca plantações por dinheiro e comida. O "Mutirão" sacrifica dinheiro para recuperar a natureza e o apoio.</li>
+                <li><b>Ferramentas:</b> A "Feira" troca plantações por dinheiro e comida. O "Mutirão" recupera a natureza.</li>
             </ul>
 
-            <h3>🚜 Jogando com a Agricultura Familiar</h3>
+            <h3>🚜 A Agricultura Familiar (Médias Propriedades)</h3>
             <ul>
-                <li><b>Foco:</b> Abastecimento contra o relógio.</li>
-                <li><b>Estratégia:</b> O consumo de comida da cidade vai te pressionar muito. Plante hortaliças sem parar e use "Abastecer Cidade" com frequência.</li>
-                <li><b>Ferramentas:</b> Junte R$400 com sacrifício para fundar a "Cooperativa", essencial para sobreviver a longo prazo.</li>
+                <li><b>Acesso à Terra:</b> <b>MÁXIMO DE 25 ÁREAS.</b> Um limite intermediário.</li>
+                <li><b>Foco:</b> Abastecimento contra o relógio. Você alimenta a nação.</li>
+                <li><b>Ferramentas:</b> Junte R$400 para fundar a "Cooperativa", essencial para sobreviver.</li>
             </ul>
 
-            <h3>🏭 Jogando com o Agronegócio</h3>
+            <h3>🏭 O Agronegócio (Latifúndios)</h3>
             <ul>
-                <li><b>Foco:</b> Capitalismo agressivo e contenção de danos.</li>
-                <li><b>Estratégia:</b> Desmatar agora custa fortunas e destrói 8% de sustentabilidade de uma vez. Expandir demais sem planejar fará você perder por revolta popular.</li>
-                <li><b>Ferramentas:</b> O "Lobby" subiu para R$ 800. Exporte soja, ganhe dinheiro e compre o apoio da mídia imediatamente.</li>
+                <li><b>Acesso à Terra:</b> <b>ILIMITADO.</b> Você pode monopolizar todo o espaço do mapa.</li>
+                <li><b>Foco:</b> Capitalismo agressivo e exportação de commodities (soja).</li>
+                <li><b>Ferramentas:</b> Desmatar destrói o meio ambiente. Use o "Lobby" (R$ 800) para comprar influência midiática e frear a revolta popular.</li>
             </ul>
         </div>
         <button class="btn-voltar" onclick="openScreen('main-menu')">VOLTAR AO MENU</button>
@@ -299,20 +221,20 @@
 
     <div id="faction-menu" class="screen">
         <h2 class="menu-title">Sua Matriz Produtiva</h2>
-        <p class="menu-desc">As metas aumentaram. O capital diminuiu.</p>
+        <p class="menu-desc">Escolha de qual lado da cerca você estará.</p>
         
         <button id="btn-camp" class="faction-btn" onclick="startGame('campones')">
-            👨‍🌾 Movimento Camponês<br>
+            👨‍🌾 Movimento Camponês (Máx. 12 Terras)<br>
             <small style="font-weight: normal;">(Meta: R$ 800 / 90% Sust. / 80% Apoio)</small>
         </button>
         
         <button id="btn-fam" class="faction-btn" onclick="startGame('familiar')">
-            🚜 Agricultura Familiar<br>
+            🚜 Agricultura Familiar (Máx. 25 Terras)<br>
             <small style="font-weight: normal;">(Meta: R$ 4.000 / 90% Comida)</small>
         </button>
         
         <button id="btn-agro" class="faction-btn" onclick="startGame('agro')">
-            🏭 Agronegócio<br>
+            🏭 Agronegócio (Terras Ilimitadas)<br>
             <small style="font-weight: normal;">(Meta: R$ 35.000 no Caixa)</small>
         </button>
 
@@ -326,7 +248,7 @@
                 <div class="hud-item">🌿 <span id="ui-sust">100</span>%</div>
                 <div class="hud-item">🏙️ <span id="ui-food">100</span>%</div>
                 <div class="hud-item">🤝 <span id="ui-support">50</span>%</div>
-                <div class="hud-item hud-turn">⏳ Turno: <span id="ui-turn">1</span></div>
+                <div class="hud-item hud-turn">⏳ Turno: <span id="ui-turn">1</span> | Terras: <span id="ui-terras">0/0</span></div>
             </div>
             
             <div id="map"></div>
@@ -378,7 +300,6 @@
 
         const mapSize = 10;
         
-        // Prêmios do Quiz reduzidos para o Modo Difícil
         const quizzes = [
             { q: "Qual a base da Agricultura Familiar?", options: ["Latifúndio.", "Mão de obra da família e policultura.", "Uso de robótica massiva."], correct: 1, reward: () => { state.popularSupport += 5; state.urbanFood += 10; log("Acertou! (+Apoio, +Comida)."); } },
             { q: "O que a Monocultura causa a longo prazo?", options: ["Enriquecimento do solo.", "Esgotamento do solo e pragas.", "Mais chuvas locais."], correct: 1, reward: () => { state.sustainability += 5; log("Acertou! (+Sustentabilidade)."); } },
@@ -388,10 +309,10 @@
 
         let pendingQuiz = null;
 
-        // Balanceamento Hardcore das Facções
         const factions = {
             campones: {
-                startMoney: 80, winCondition: () => state.sustainability >= 90 && state.money >= 800 && state.popularSupport >= 80,
+                startMoney: 80, maxTiles: 12,
+                winCondition: () => state.sustainability >= 90 && state.money >= 800 && state.popularSupport >= 80,
                 actions: [
                     { id: 'plantar', name: '🌱 Plantar (R$ 15)', cost: 15, tool: 'campones' },
                     { id: 'mutirao', name: '🤝 Mutirão (R$ 70)', cost: 70, effect: () => { state.sustainability = Math.min(100, state.sustainability + 10); state.popularSupport = Math.min(100, state.popularSupport + 3); log("Mutirão feito! Recuperação leve."); } },
@@ -399,7 +320,8 @@
                 ]
             },
             familiar: {
-                startMoney: 300, winCondition: () => state.money >= 4000 && state.urbanFood >= 90,
+                startMoney: 300, maxTiles: 25,
+                winCondition: () => state.money >= 4000 && state.urbanFood >= 90,
                 actions: [
                     { id: 'plantar', name: '🥕 Plantar (R$ 30)', cost: 30, tool: 'familiar' },
                     { id: 'vender', name: '🚚 Abastecer Cidade', cost: 0, effect: sellFood },
@@ -407,7 +329,8 @@
                 ]
             },
             agro: {
-                startMoney: 3000, winCondition: () => state.money >= 35000,
+                startMoney: 3000, maxTiles: 999, // Ilimitado para o tamanho do mapa
+                winCondition: () => state.money >= 35000,
                 actions: [
                     { id: 'desmatar', name: '🪓 Desmatar (R$ 250)', cost: 250, tool: 'empty' },
                     { id: 'plantar', name: '🌾 Soja (R$ 100)', cost: 100, tool: 'agro' },
@@ -429,7 +352,7 @@
 
             openScreen('game-container');
             generateMap(); renderMap(); setupControls(); updateHUD();
-            log(`Modo Sobrevivência: ${selectedFaction.toUpperCase()}`);
+            log(`Modo Realista: ${selectedFaction.toUpperCase()}`);
         }
 
         function generateMap() {
@@ -477,13 +400,20 @@
 
             if (state.money < act.cost) { log("❌ Sem Dinheiro."); return; }
 
+            // Lógica de limite de terras (Minifúndio vs Latifúndio)
             if (act.tool === 'campones' || act.tool === 'familiar' || act.tool === 'agro') {
+                let limit = factions[state.faction].maxTiles;
+                if (countTiles(act.tool) >= limit) {
+                    log(`🛑 LIMITE DE TERRAS ATINGIDO (${limit}). O sistema não permite que você expanda mais.`);
+                    return;
+                }
+
                 if (currentType === 'empty') { state.map[index] = act.tool; state.money -= act.cost; log(`✔ Plantado.`); } 
                 else { log("⚠️ Plante apenas em Terras Vazias (Laranja)."); return; }
             } else if (act.tool === 'empty' && state.faction === 'agro') { 
                 if (currentType === 'forest') { 
                     state.map[index] = 'empty'; state.money -= act.cost; 
-                    state.sustainability -= 8; // Punicao Severa no Hardcore
+                    state.sustainability -= 8;
                     state.popularSupport -= 4; 
                     log(`🪓 Floresta devastada. Impacto severo na natureza!`); 
                 } 
@@ -492,7 +422,6 @@
             renderMap(); updateHUD();
         }
 
-        // Economia Hardcore
         function sellDirect() {
             let crops = countTiles('campones');
             if (crops > 0) {
@@ -545,7 +474,6 @@
         function executeTurnEnd() {
             state.turn++; state.eventMultiplier = 1; state.eventPenalty = 1;
             
-            // Fome Brutal no Modo Hardcore (-18 por turno)
             state.urbanFood -= 18; 
             if(state.urbanFood < 50) state.popularSupport -= 8; 
 
@@ -563,9 +491,9 @@
             const rand = Math.random();
             if (rand < 0.20) { log("☀️ Seca Severa! Produção vai despencar."); state.eventPenalty = (state.faction === 'campones') ? 0.8 : 0.5; } 
             else if (rand < 0.35) { log("📈 Mercado Levemente Aquecido."); state.eventMultiplier = 1.3; } 
-            else if (rand < 0.50 && state.faction === 'familiar') { log("🚜 Pronaf liberado! (Migalhas: +R$200)."); state.money += 200; } 
+            else if (rand < 0.50 && state.faction === 'familiar') { log("🚜 Pronaf liberado! (+R$200)."); state.money += 200; } 
             else if (rand < 0.70) {
-                log("🐛 PRAGA MUTANTE! Lavouras perdidas.");
+                log("🐛 PRAGA! Lavouras perdidas.");
                 for(let i=0; i<state.map.length; i++) {
                     if ((['campones', 'familiar', 'agro'].includes(state.map[i])) && Math.random() < 0.4) { state.map[i] = 'empty'; }
                 }
@@ -580,6 +508,11 @@
             document.getElementById('ui-support').innerText = state.popularSupport.toFixed(0);
             document.getElementById('ui-turn').innerText = state.turn;
 
+            // Exibir limite de terras atual no HUD
+            let currentTiles = countTiles(state.faction);
+            let maxTilesLimit = factions[state.faction].maxTiles === 999 ? "∞" : factions[state.faction].maxTiles;
+            document.getElementById('ui-terras').innerText = `${currentTiles}/${maxTilesLimit}`;
+
             document.getElementById('ui-food').parentElement.className = state.urbanFood <= 30 ? 'hud-item stat-warning' : 'hud-item';
             document.getElementById('ui-sust').parentElement.className = state.sustainability <= 30 ? 'hud-item stat-warning' : 'hud-item';
             document.getElementById('ui-support').parentElement.className = state.popularSupport <= 30 ? 'hud-item stat-warning' : 'hud-item';
@@ -589,7 +522,7 @@
             if (state.urbanFood <= 0) { alert("GAME OVER: A cidade colapsou de fome."); openScreen('main-menu'); } 
             else if (state.sustainability <= 0) { alert("GAME OVER: O ecossistema foi obliterado."); openScreen('main-menu'); } 
             else if (state.popularSupport <= 0) { alert("GAME OVER: Zero apoio popular. Você foi expulso."); openScreen('main-menu'); } 
-            else if (factions[state.faction].winCondition()) { alert(`🏆 VITÓRIA INCRÍVEL! Você superou o Modo Sobrevivência com a Matriz ${state.faction.toUpperCase()}!`); openScreen('main-menu'); }
+            else if (factions[state.faction].winCondition()) { alert(`🏆 VITÓRIA INCRÍVEL! Você superou a desigualdade com a Matriz ${state.faction.toUpperCase()}!`); openScreen('main-menu'); }
         }
 
         function log(msg) {

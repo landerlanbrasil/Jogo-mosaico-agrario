@@ -86,7 +86,6 @@
         .stat-warning { color: #e74c3c !important; font-weight: bold; animation: blink 1s infinite;}
         @keyframes blink { 50% { opacity: 0.3; } }
 
-        /* Animações do Tutorial */
         @keyframes glow-pulse {
             0% { box-shadow: 0 0 5px #f1c40f, inset 0 0 5px #f1c40f; transform: scale(1); }
             50% { box-shadow: 0 0 25px #f1c40f, inset 0 0 10px #f1c40f; transform: scale(1.02); }
@@ -125,12 +124,25 @@
         <button class="btn-main" style="background:#f39c12; color: #000;" onclick="abrirRanking()">🏆 VER RANKING</button>
     </div>
 
+    <!-- TELA DE RANKING DIVIDIDA POR CATEGORIAS -->
     <div id="ranking-menu" class="screen">
         <h2 class="menu-title">🏆 Hall da Fama Agrário</h2>
         <div class="tutorial-content" style="text-align: center;">
-            <p>Os melhores gestores que venceram o desafio no menor tempo.</p>
-            <ul id="ranking-list" class="summary-list" style="background: rgba(0,0,0,0.5); padding: 20px; list-style: none; margin: 0; padding-left: 0;">
-                <li>Carregando placar...</li>
+            <p>Os melhores gestores separados por matriz produtiva.</p>
+            
+            <h3 style="color: var(--campones); margin-top: 15px;">👨‍🌾 Movimento Camponês</h3>
+            <ul id="rank-camp" class="summary-list" style="background: rgba(0,0,0,0.5); padding: 15px; list-style: none; margin: 0 0 15px 0; border-radius: 8px;">
+                <li style='text-align: center;'>Carregando...</li>
+            </ul>
+
+            <h3 style="color: var(--familiar);">🚜 Agricultura Familiar</h3>
+            <ul id="rank-fam" class="summary-list" style="background: rgba(0,0,0,0.5); padding: 15px; list-style: none; margin: 0 0 15px 0; border-radius: 8px;">
+                <li style='text-align: center;'>Carregando...</li>
+            </ul>
+
+            <h3 style="color: var(--agro);">🏭 Agronegócio</h3>
+            <ul id="rank-agro" class="summary-list" style="background: rgba(0,0,0,0.5); padding: 15px; list-style: none; margin: 0 0 15px 0; border-radius: 8px;">
+                <li style='text-align: center;'>Carregando...</li>
             </ul>
         </div>
         <button class="btn-voltar" onclick="openScreen('main-menu')">VOLTAR AO MENU</button>
@@ -193,9 +205,9 @@
                     <div class="legend-item"><div class="color-sample" style="background: var(--city);"></div> Cidades</div>
                     <div class="legend-item"><div class="color-sample" style="background: var(--port);"></div> Portos</div>
                     <div class="legend-item"><div class="color-sample" style="background: var(--forest);"></div> Florestas</div>
-                    <div class="legend-item"><div class="color-sample" style="background: var(--empty);"></div> Terra</div>
-                    <div class="legend-item"><div class="color-sample" style="background: var(--campones);"></div> Poli.</div>
-                    <div class="legend-item"><div class="color-sample" style="background: var(--familiar);"></div> Horta</div>
+                    <div class="legend-item"><div class="color-sample" style="background: var(--empty);"></div> Terra Preparada</div>
+                    <div class="legend-item"><div class="color-sample" style="background: var(--campones);"></div> Policultura</div>
+                    <div class="legend-item"><div class="color-sample" style="background: var(--familiar);"></div> Hortaliça</div>
                     <div class="legend-item"><div class="color-sample" style="background: var(--agro);"></div> Soja</div>
                 </div>
             </div>
@@ -225,6 +237,7 @@
         </div>
     </div>
 
+    <!-- SCRIPT DO FIREBASE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-analytics.js";
@@ -245,7 +258,6 @@
         const analytics = getAnalytics(app);
         const db = getFirestore(app);
 
-        // Disponibiliza as funções do banco de dados na janela (window) para o jogo poder acessar
         window.bancoDeDados = { db, collection, addDoc, getDocs, query, orderBy, limit };
     </script>
 
@@ -264,9 +276,7 @@
             }, 1000);
         }
 
-        function stopTimer() {
-            clearInterval(timerInterval);
-        }
+        function stopTimer() { clearInterval(timerInterval); }
 
         function updateTimerDisplay() {
             let m = Math.floor(timeElapsed / 60).toString().padStart(2, '0');
@@ -280,7 +290,7 @@
             if(screenId === 'main-menu') { 
                 state.map = []; 
                 document.getElementById('log-box').innerHTML = ''; 
-                stopTimer(); // Pausa se abandonar o jogo
+                stopTimer();
             }
         }
 
@@ -364,7 +374,6 @@
             document.getElementById('tutorial-banner').style.display = 'block';
             updateTutorialAnim();
             
-            // Inicia o Relógio do Desafio!
             startTimer();
         }
 
@@ -569,7 +578,6 @@
                 state.tutStep = 4;
                 updateTutorialAnim();
             }
-
             Math.random() < 0.35 ? triggerQuiz() : executeTurnEnd(); 
         }
 
@@ -670,7 +678,6 @@
             });
         }
 
-        // LÓGICA DE VITÓRIA COM INTEGRAÇÃO AO FIREBASE E SALVAMENTO DE NOME
         async function checkWinLoss() {
             if (state.urbanFood <= 0) { stopTimer(); alert("GAME OVER: A cidade entrou em colapso completo por inanição."); openScreen('main-menu'); } 
             else if (state.sustainability <= 0) { stopTimer(); alert("GAME OVER: Desastre irreversível. O solo virou areia e os rios secaram."); openScreen('main-menu'); } 
@@ -680,14 +687,11 @@
                 let m = Math.floor(timeElapsed / 60).toString().padStart(2, '0');
                 let s = (timeElapsed % 60).toString().padStart(2, '0');
                 
-                // Pede o nome do jogador para salvar no banco
                 let nomeJogador = prompt(`🏆 VITÓRIA! Você venceu com a matriz ${state.faction.toUpperCase()} em ${m}:${s}!\n\nDigite seu nome ou apelido para o Ranking Global:`);
                 
-                // Se o jogador digitou um nome e o Firebase carregou corretamente
                 if (nomeJogador && nomeJogador.trim() !== "" && window.bancoDeDados) {
                     try {
                         log("Salvando seu tempo na nuvem...");
-                        // Envia o documento para a coleção 'ranking' no Firestore
                         await window.bancoDeDados.addDoc(window.bancoDeDados.collection(window.bancoDeDados.db, "ranking"), {
                             nome: nomeJogador.trim(),
                             faccao: state.faction,
@@ -705,57 +709,77 @@
             }
         }
 
-        // LÓGICA PARA PUXAR A LISTA DOS TOP 10 DO FIREBASE E MOSTRAR NO MENU
         async function abrirRanking() {
             openScreen('ranking-menu');
-            const lista = document.getElementById('ranking-list');
-            lista.innerHTML = "<li style='text-align: center;'>Conectando ao banco de dados... 🛰️</li>";
+            
+            const listCamp = document.getElementById('rank-camp');
+            const listFam = document.getElementById('rank-fam');
+            const listAgro = document.getElementById('rank-agro');
+
+            listCamp.innerHTML = "<li style='text-align: center;'>Buscando dados... 🛰️</li>";
+            listFam.innerHTML = "<li style='text-align: center;'>Buscando dados... 🛰️</li>";
+            listAgro.innerHTML = "<li style='text-align: center;'>Buscando dados... 🛰️</li>";
 
             if (!window.bancoDeDados) {
-                lista.innerHTML = "<li style='color: #e74c3c; text-align: center;'>Erro: Sistema de Ranking offline ou não configurado.</li>";
+                listCamp.innerHTML = "<li style='color: #e74c3c;'>Erro: Firebase offline.</li>";
+                listFam.innerHTML = "<li style='color: #e74c3c;'>Erro: Firebase offline.</li>";
+                listAgro.innerHTML = "<li style='color: #e74c3c;'>Erro: Firebase offline.</li>";
                 return;
             }
 
             try {
-                // Prepara a consulta: Pega da coleção "ranking", ordena do menor tempo para o maior, limite de 10
+                // Traz até 100 resultados globais ordenados por tempo
                 const q = window.bancoDeDados.query(
                     window.bancoDeDados.collection(window.bancoDeDados.db, "ranking"), 
                     window.bancoDeDados.orderBy("tempoSegundos", "asc"), 
-                    window.bancoDeDados.limit(10)
+                    window.bancoDeDados.limit(100)
                 );
                 
-                // Dispara a consulta na nuvem
                 const querySnapshot = await window.bancoDeDados.getDocs(q);
                 
-                // Limpa a mensagem de "Carregando"
-                lista.innerHTML = ""; 
+                listCamp.innerHTML = ""; 
+                listFam.innerHTML = ""; 
+                listAgro.innerHTML = ""; 
                 
-                let posicao = 1;
-                // Para cada jogador retornado, desenha um item na lista HTML
+                let posCamp = 1, posFam = 1, posAgro = 1;
+
                 querySnapshot.forEach((doc) => {
                     const dados = doc.data();
-                    let icone = dados.faccao === 'agro' ? '🏭' : (dados.faccao === 'familiar' ? '🚜' : '👨‍🌾');
                     
-                    lista.innerHTML += `
+                    let htmlTemplate = `
                         <li style="margin-bottom: 12px; border-bottom: 1px solid #34495e; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
                             <div>
-                                <b style="color:#f39c12; font-size: 16px;">#${posicao}</b> - <b style="font-size: 16px;">${dados.nome}</b><br>
-                                <small style="color: #95a5a6; margin-left: 25px;">${icone} ${dados.faccao.toUpperCase()}</small>
+                                <b style="color:#f39c12; font-size: 16px;">#POS_NUM</b> - <b style="font-size: 16px;">${dados.nome}</b><br>
+                                <small style="color: #95a5a6; margin-left: 25px;">Turnos jogados: não medido</small>
                             </div>
                             <div style="color:#2ecc71; font-weight: bold; font-size: 16px;">
                                 ⏱️ ${dados.tempoFormatado}
                             </div>
                         </li>`;
-                    posicao++;
+
+                    // Distribui para a lista correta, limitando a exibir apenas o TOP 10 de cada uma
+                    if(dados.faccao === 'campones' && posCamp <= 10) {
+                        listCamp.innerHTML += htmlTemplate.replace('POS_NUM', posCamp);
+                        posCamp++;
+                    } else if(dados.faccao === 'familiar' && posFam <= 10) {
+                        listFam.innerHTML += htmlTemplate.replace('POS_NUM', posFam);
+                        posFam++;
+                    } else if(dados.faccao === 'agro' && posAgro <= 10) {
+                        listAgro.innerHTML += htmlTemplate.replace('POS_NUM', posAgro);
+                        posAgro++;
+                    }
                 });
 
-                if(lista.innerHTML === "") {
-                    lista.innerHTML = "<li style='text-align: center;'>Nenhum vencedor ainda. Seja o primeiro a dominar a terra!</li>";
-                }
+                // Se a lista continuar vazia após o filtro, mostra aviso
+                if(listCamp.innerHTML === "") listCamp.innerHTML = "<li style='text-align: center; color: #bdc3c7;'>Nenhum vencedor nesta categoria.</li>";
+                if(listFam.innerHTML === "") listFam.innerHTML = "<li style='text-align: center; color: #bdc3c7;'>Nenhum vencedor nesta categoria.</li>";
+                if(listAgro.innerHTML === "") listAgro.innerHTML = "<li style='text-align: center; color: #bdc3c7;'>Nenhum vencedor nesta categoria.</li>";
 
             } catch (e) {
                 console.error("Erro ao puxar ranking: ", e);
-                lista.innerHTML = "<li style='color: #e74c3c; text-align: center;'>Falha ao carregar o Hall da Fama. Verifique se o Cloud Firestore está criado e com as Regras de leitura ativas no Console do Firebase.</li>";
+                listCamp.innerHTML = "<li style='color: #e74c3c; text-align: center;'>Falha de conexão com a Nuvem.</li>";
+                listFam.innerHTML = "<li style='color: #e74c3c; text-align: center;'>Falha de conexão com a Nuvem.</li>";
+                listAgro.innerHTML = "<li style='color: #e74c3c; text-align: center;'>Falha de conexão com a Nuvem.</li>";
             }
         }
 

@@ -47,11 +47,12 @@
         .btn-voltar { background: #e74c3c; text-align: center; padding: 12px; margin-top: 15px; border:none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; width: 100%; max-width: 350px; margin-inline: auto;}
 
         .tutorial-content { max-height: 60vh; overflow-y: auto; padding-right: 10px; font-size: 14px; line-height: 1.5; margin-bottom: 15px;}
-        .tutorial-content h3 { color: #f39c12; margin-bottom: 5px; border-bottom: 1px solid #7f8c8d; padding-bottom: 5px;}
+        .tutorial-content h3 { color: #f39c12; margin-bottom: 5px; border-bottom: 1px solid #7f8c8d; padding-bottom: 5px; margin-top: 20px;}
+        .tutorial-content ul { background: rgba(0,0,0,0.2); padding: 15px 15px 15px 35px; border-radius: 8px;}
         
         #hud { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; background: #1a252f; padding: 10px; border-radius: 10px; margin-bottom: 10px; font-weight: bold; font-size: clamp(11px, 2.5vw, 14px); }
         .hud-item { background: rgba(255,255,255,0.05); padding: 6px; border-radius: 5px; display: flex; align-items: center; justify-content: center; gap: 3px; text-align: center; flex-direction: column; }
-        .hud-turn { grid-column: span 4; background: rgba(231, 76, 60, 0.3); flex-direction: row; font-size: 14px;}
+        .hud-turn { grid-column: span 4; background: rgba(231, 76, 60, 0.3); flex-direction: row; font-size: 14px; justify-content: space-between; padding: 10px 15px;}
 
         #map-section { flex: 1.5; display: flex; flex-direction: column;}
         #map { display: grid; grid-template-columns: repeat(10, 1fr); gap: 2px; background: #000; padding: 5px; border-radius: 8px; border: 3px solid var(--panel-border); width: 100%; max-width: 450px; margin: 0 auto; aspect-ratio: 1 / 1; transition: 0.3s;}
@@ -73,8 +74,10 @@
         #controls { flex: 1; display: flex; flex-direction: column; gap: 10px; min-width: 250px; transition: 0.3s;}
         #action-buttons { display: grid; grid-template-columns: 1fr; gap: 6px; border-radius: 8px; transition: 0.3s;}
 
-        .action-btn { background: #7f8c8d; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; text-align: center; transition: 0.2s;}
+        .action-btn { background: #7f8c8d; color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; text-align: center; transition: 0.2s;}
+        .action-btn small { display: block; font-size: 11px; font-weight: normal; color: #ecf0f1; margin-top: 4px; line-height: 1.2;}
         .action-btn.active { background: #f39c12; color: #000; box-shadow: inset 0 0 5px #000;}
+        .action-btn.active small { color: #111; font-weight: bold;}
         .action-btn.disabled { opacity: 0.4; cursor: not-allowed; background: #555 !important;}
         
         .end-turn { background: var(--hardcore); font-size: 14px; padding: 12px; transition: 0.3s;}
@@ -89,24 +92,8 @@
             50% { box-shadow: 0 0 25px #f1c40f, inset 0 0 10px #f1c40f; transform: scale(1.02); }
             100% { box-shadow: 0 0 5px #f1c40f, inset 0 0 5px #f1c40f; transform: scale(1); }
         }
-        .tutorial-glow {
-            animation: glow-pulse 1.5s infinite !important;
-            border: 2px solid #f1c40f !important;
-            z-index: 10;
-        }
-        #tutorial-banner {
-            display: none;
-            background: #f39c12;
-            color: #000;
-            text-align: center;
-            padding: 15px;
-            font-weight: bold;
-            font-size: 14px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-            width: 100%;
-        }
+        .tutorial-glow { animation: glow-pulse 1.5s infinite !important; border: 2px solid #f1c40f !important; z-index: 10; }
+        #tutorial-banner { display: none; background: #f39c12; color: #000; text-align: center; padding: 15px; font-weight: bold; font-size: 14px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); width: 100%; }
 
         /* Modal Overlays */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 100; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
@@ -121,7 +108,7 @@
             #action-buttons { grid-template-columns: 1fr 1fr; } 
             .hud-item span { display: block; font-size: 14px; margin-top: 2px;}
             .hud-item { flex-direction: column; }
-            .hud-turn { flex-direction: row; }
+            .hud-turn { flex-direction: column; gap: 5px; text-align: center;}
         }
     </style>
 </head>
@@ -134,14 +121,35 @@
         <h2 class="menu-title">Estratégia e Foco</h2>
         <p class="menu-desc">Regra de Ouro: Você não pode misturar os tipos de ações no mesmo mês. Foque em plantar, vender ou articular.</p>
         <button class="btn-main" onclick="openScreen('faction-menu')">▶ INICIAR DISPUTA</button>
-        <button class="btn-main" style="background:#34495e;" onclick="openScreen('tutorial-menu')">📖 LER REGRAS</button>
+        <button class="btn-main" style="background:#34495e;" onclick="openScreen('tutorial-menu')">📖 LER REGRAS E STATUS</button>
+        <button class="btn-main" style="background:#f39c12; color: #000;" onclick="abrirRanking()">🏆 VER RANKING</button>
+    </div>
+
+    <div id="ranking-menu" class="screen">
+        <h2 class="menu-title">🏆 Hall da Fama Agrário</h2>
+        <div class="tutorial-content" style="text-align: center;">
+            <p>Os melhores gestores que venceram o desafio no menor tempo.</p>
+            <ul id="ranking-list" class="summary-list" style="background: rgba(0,0,0,0.5); padding: 20px; list-style: none; margin: 0; padding-left: 0;">
+                <li>Carregando placar...</li>
+            </ul>
+        </div>
+        <button class="btn-voltar" onclick="openScreen('main-menu')">VOLTAR AO MENU</button>
     </div>
 
     <div id="tutorial-menu" class="screen">
         <h2 class="menu-title">Manual Agrário</h2>
         <div class="tutorial-content">
+            <h3 style="margin-top: 0;">📊 Entendendo o Painel de Status</h3>
+            <p>Fique de olho nas 4 barras vitais no topo do jogo. Se qualquer uma delas chegar a 0% (ou a cidade colapsar de fome), você perde!</p>
+            <ul>
+                <li><b>💰 Caixa:</b> O dinheiro da sua matriz. Sem ele, você não planta nem usa habilidades.</li>
+                <li><b>🌿 Sustentabilidade:</b> A saúde da natureza. Desmatar, grilar ou usar agrotóxicos reduzirá esse valor rapidamente.</li>
+                <li><b>🏙️ Abastecimento:</b> A comida da cidade. <b>Cai 15% todo mês passivamente!</b> É preciso vender produtos para a cidade para mantê-la alimentada.</li>
+                <li><b>🤝 Apoio Popular:</b> Como o povo vê sua facção. Cai se a fome aumentar ou se a destruição ambiental for extrema. Pode ser recuperado com eventos sociais ou Lobby (no caso do Agronegócio).</li>
+            </ul>
+
             <h3>⏳ Ações Múltiplas e o Foco do Turno</h3>
-            <p>Você pode <b>Plantar e Desmatar</b> várias áreas de uma vez no mesmo mês (basta ter dinheiro e continuar clicando no mapa). <b>PORÉM</b>, você só pode escolher UM tipo de tarefa por mês. Exemplo: Se você plantou uma semente, você não pode clicar em "Vender" ou em "Lobby" naquele mês. Se você "Vender", não poderá plantar nada até o próximo turno.</p>
+            <p>Você pode <b>Plantar e Desmatar</b> várias áreas de uma vez no mesmo mês (basta ter dinheiro e continuar clicando no mapa). <b>PORÉM</b>, você só pode escolher UM tipo de tarefa por mês. Exemplo: Se você plantou uma semente, não pode clicar em "Vender" ou em "Lobby" naquele mês. Se "Vender", não poderá plantar nada até o próximo turno.</p>
 
             <h3>👨‍🌾 Camponês (Minifúndio)</h3>
             <ul><li><b>Acesso à Terra:</b> Máximo 12 áreas.</li><li><b>Ações Únicas:</b> <i>Sementes Crioulas</i> (Recupera a natureza). <i>Marcha Popular</i> (Garante apoio social).</li></ul>
@@ -168,11 +176,16 @@
 
         <div id="map-section">
             <div id="hud">
-                <div class="hud-item">💰 <span id="ui-money">0</span></div>
-                <div class="hud-item">🌿 <span id="ui-sust">100</span>%</div>
-                <div class="hud-item">🏙️ <span id="ui-food">100</span>%</div>
-                <div class="hud-item">🤝 <span id="ui-support">50</span>%</div>
-                <div class="hud-item hud-turn">⏳ Turno: <span id="ui-turn">1</span> | Terras Ocupadas: <span id="ui-terras">0/0</span></div>
+                <div class="hud-item" title="Dinheiro">💰 <span id="ui-money">0</span></div>
+                <div class="hud-item" title="Sustentabilidade">🌿 <span id="ui-sust">100</span>%</div>
+                <div class="hud-item" title="Abastecimento Urbano">🏙️ <span id="ui-food">100</span>%</div>
+                <div class="hud-item" title="Apoio Popular">🤝 <span id="ui-support">50</span>%</div>
+                
+                <div class="hud-item hud-turn">
+                    <span>⏳ Turno: <span id="ui-turn">1</span></span>
+                    <span>⏱️ <span id="ui-timer" style="color: #f39c12;">00:00</span></span>
+                    <span>🗺️ Terras: <span id="ui-terras">0/0</span></span>
+                </div>
             </div>
             <div id="map"></div>
             <div class="legend-box">
@@ -180,9 +193,9 @@
                     <div class="legend-item"><div class="color-sample" style="background: var(--city);"></div> Cidades</div>
                     <div class="legend-item"><div class="color-sample" style="background: var(--port);"></div> Portos</div>
                     <div class="legend-item"><div class="color-sample" style="background: var(--forest);"></div> Florestas</div>
-                    <div class="legend-item"><div class="color-sample" style="background: var(--empty);"></div> Terra Preparada</div>
-                    <div class="legend-item"><div class="color-sample" style="background: var(--campones);"></div> Policultura</div>
-                    <div class="legend-item"><div class="color-sample" style="background: var(--familiar);"></div> Hortaliça</div>
+                    <div class="legend-item"><div class="color-sample" style="background: var(--empty);"></div> Terra</div>
+                    <div class="legend-item"><div class="color-sample" style="background: var(--campones);"></div> Poli.</div>
+                    <div class="legend-item"><div class="color-sample" style="background: var(--familiar);"></div> Horta</div>
                     <div class="legend-item"><div class="color-sample" style="background: var(--agro);"></div> Soja</div>
                 </div>
             </div>
@@ -212,18 +225,70 @@
         </div>
     </div>
 
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-analytics.js";
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBEjy-F-8Xcbz5wWks5cfKyRrmwEYk67Mk",
+            authDomain: "mosaico-agrario.firebaseapp.com",
+            databaseURL: "https://mosaico-agrario-default-rtdb.firebaseio.com",
+            projectId: "mosaico-agrario",
+            storageBucket: "mosaico-agrario.firebasestorage.app",
+            messagingSenderId: "471279587942",
+            appId: "1:471279587942:web:ce549faf672057d7c313a7",
+            measurementId: "G-6P2Q66PF32"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getFirestore(app);
+
+        // Disponibiliza as funções do banco de dados na janela (window) para o jogo poder acessar
+        window.bancoDeDados = { db, collection, addDoc, getDocs, query, orderBy, limit };
+    </script>
+
     <script>
+        // Variáveis do Cronômetro
+        let timerInterval = null;
+        let timeElapsed = 0;
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            timeElapsed = 0;
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                timeElapsed++;
+                updateTimerDisplay();
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+        }
+
+        function updateTimerDisplay() {
+            let m = Math.floor(timeElapsed / 60).toString().padStart(2, '0');
+            let s = (timeElapsed % 60).toString().padStart(2, '0');
+            document.getElementById('ui-timer').innerText = `${m}:${s}`;
+        }
+
         function openScreen(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(screenId).classList.add('active');
-            if(screenId === 'main-menu') { state.map = []; document.getElementById('log-box').innerHTML = ''; }
+            if(screenId === 'main-menu') { 
+                state.map = []; 
+                document.getElementById('log-box').innerHTML = ''; 
+                stopTimer(); // Pausa se abandonar o jogo
+            }
         }
 
         const state = {
             faction: '', money: 0, sustainability: 100, urbanFood: 100, popularSupport: 50, turn: 1,
             map: [], selectedAction: null, permMultiplier: 0, eventMultiplier: 1, eventPenalty: 1,
             lockedActionId: null, turnSummary: [], 
-            isTutorial: false, tutStep: 0 // Controle do Tutorial Animado
+            isTutorial: false, tutStep: 0 
         };
 
         const mapSize = 10;
@@ -247,34 +312,34 @@
                 startMoney: 80, maxTiles: 12,
                 winCondition: () => state.sustainability >= 90 && state.money >= 800 && state.popularSupport >= 80,
                 actions: [
-                    { id: 'plantar', name: '🌱 Plantar (R$ 15)', cost: 15, tool: 'campones' },
-                    { id: 'mutirao', name: '🤝 Mutirão (R$ 70)', cost: 70, effect: () => { state.sustainability = Math.min(100, state.sustainability + 12); state.popularSupport = Math.min(100, state.popularSupport + 5); addSummary("Mutirão organizado: Solo recuperado e união reforçada."); return true;} },
-                    { id: 'feira', name: '🧺 Feira na Cidade', cost: 0, effect: () => sellDirect() },
-                    { id: 'sementes', name: '🌾 Sem. Crioulas (R$ 30)', cost: 30, effect: () => { state.sustainability = Math.min(100, state.sustainability + 8); addSummary("Sementes crioulas plantadas: Biodiversidade protegida (+8 Sust)."); return true;} },
-                    { id: 'marcha', name: '🚩 Marcha Popular (R$ 0)', cost: 0, effect: () => { state.popularSupport = Math.min(100, state.popularSupport + 10); state.sustainability -= 2; addSummary("Marcha na cidade! A causa ganhou visibilidade (+10 Apoio)."); return true;} }
+                    { id: 'plantar', name: '🌱 Plantar (-R$ 15)<br><small>Requer Terra Vazia</small>', cost: 15, tool: 'campones' },
+                    { id: 'mutirao', name: '🤝 Mutirão (-R$ 70)<br><small>+12%🌿 | +5%🤝</small>', cost: 70, effect: () => { state.sustainability = Math.min(100, state.sustainability + 12); state.popularSupport = Math.min(100, state.popularSupport + 5); addSummary("Mutirão organizado: Solo recuperado e união reforçada."); return true;} },
+                    { id: 'feira', name: '🧺 Feira na Cidade<br><small>+R$ | +5%🏙️ | +3%🤝 (p/ lote)</small>', cost: 0, effect: () => sellDirect() },
+                    { id: 'sementes', name: '🌾 Sem. Crioulas (-R$ 30)<br><small>+8%🌿</small>', cost: 30, effect: () => { state.sustainability = Math.min(100, state.sustainability + 8); addSummary("Sementes crioulas plantadas: Biodiversidade protegida (+8 Sust)."); return true;} },
+                    { id: 'marcha', name: '🚩 Marcha Popular<br><small>+10%🤝 | -2%🌿</small>', cost: 0, effect: () => { state.popularSupport = Math.min(100, state.popularSupport + 10); state.sustainability -= 2; addSummary("Marcha na cidade! A causa ganhou visibilidade (+10 Apoio)."); return true;} }
                 ]
             },
             familiar: {
                 startMoney: 300, maxTiles: 25,
                 winCondition: () => state.money >= 4000 && state.urbanFood >= 90,
                 actions: [
-                    { id: 'plantar', name: '🥕 Plantar (R$ 30)', cost: 30, tool: 'familiar' },
-                    { id: 'vender', name: '🚚 Abastecer Cidade', cost: 0, effect: sellFood },
-                    { id: 'pnae', name: '🏫 Vender PNAE', cost: 0, effect: () => sellPNAE() },
-                    { id: 'cooperativa', name: '🏢 Cooperativa (R$ 400)', cost: 400, effect: () => { state.popularSupport += 10; state.permMultiplier += 0.2; addSummary("Cooperativa fundada! Força de venda aumentada."); return true;} },
-                    { id: 'trator', name: '🚜 Trator Comum (R$ 200)', cost: 200, effect: () => { state.permMultiplier += 0.15; addSummary("Trator adquirido! Colheitas valerão mais."); return true;} }
+                    { id: 'plantar', name: '🥕 Plantar (-R$ 30)<br><small>Requer Terra Vazia</small>', cost: 30, tool: 'familiar' },
+                    { id: 'vender', name: '🚚 Abastecer Cidade<br><small>+R$ | +12%🏙️ (p/ lote)</small>', cost: 0, effect: sellFood },
+                    { id: 'pnae', name: '🏫 Vender PNAE<br><small>+R$ | +25%🏙️ | +6%🤝</small>', cost: 0, effect: () => sellPNAE() },
+                    { id: 'cooperativa', name: '🏢 Cooperativa (-R$ 400)<br><small>+10%🤝 | +Lucro Contínuo</small>', cost: 400, effect: () => { state.popularSupport += 10; state.permMultiplier += 0.2; addSummary("Cooperativa fundada! Força de venda aumentada."); return true;} },
+                    { id: 'trator', name: '🚜 Trator (-R$ 200)<br><small>+Lucro Contínuo</small>', cost: 200, effect: () => { state.permMultiplier += 0.15; addSummary("Trator adquirido! Colheitas valerão mais."); return true;} }
                 ]
             },
             agro: {
                 startMoney: 3000, maxTiles: 999,
                 winCondition: () => state.money >= 35000,
                 actions: [
-                    { id: 'desmatar', name: '🪓 Desmatar (R$ 250)', cost: 250, tool: 'empty' },
-                    { id: 'plantar', name: '🌾 Plantar Soja (R$ 100)', cost: 100, tool: 'agro' },
-                    { id: 'exportar', name: '🚢 Exportar Safra', cost: 0, effect: exportAgro },
-                    { id: 'grilagem', name: '📜 Grilar Terra', cost: 0, tool: 'grilagem' },
-                    { id: 'pulverizar', name: '🛩️ Pulverização (R$ 300)', cost: 300, effect: () => { state.permMultiplier += 0.3; state.sustainability -= 15; state.popularSupport -= 10; addSummary("Agrotóxicos usados em massa! Mais lucros, porém desastre ambiental."); return true;} },
-                    { id: 'lobby', name: '💼 Lobby Político (R$ 800)', cost: 800, effect: () => { state.popularSupport = Math.min(100, state.popularSupport + 25); addSummary("Lobby aprovado: A mídia abafa os problemas ecológicos."); return true;} }
+                    { id: 'desmatar', name: '🪓 Desmatar (-R$ 250)<br><small>-8%🌿 | -4%🤝 (Em Florestas)</small>', cost: 250, tool: 'empty' },
+                    { id: 'plantar', name: '🌾 Plantar Soja (-R$ 100)<br><small>Requer Terra Vazia</small>', cost: 100, tool: 'agro' },
+                    { id: 'exportar', name: '🚢 Exportar Safra<br><small>+R$ | -4%🌿 (p/ lote)</small>', cost: 0, effect: exportAgro },
+                    { id: 'grilagem', name: '📜 Grilar Terra<br><small>-12%🌿 | -10%🤝 (Em Florestas)</small>', cost: 0, tool: 'grilagem' },
+                    { id: 'pulverizar', name: '🛩️ Pulverização (-R$ 300)<br><small>-15%🌿 | -10%🤝 | +Lucro</small>', cost: 300, effect: () => { state.permMultiplier += 0.3; state.sustainability -= 15; state.popularSupport -= 10; addSummary("Agrotóxicos usados em massa! Mais lucros, porém desastre ambiental."); return true;} },
+                    { id: 'lobby', name: '💼 Lobby Político (-R$ 800)<br><small>+25%🤝</small>', cost: 800, effect: () => { state.popularSupport = Math.min(100, state.popularSupport + 25); addSummary("Lobby aprovado: A mídia abafa os problemas ecológicos."); return true;} }
                 ]
             }
         };
@@ -294,19 +359,19 @@
             generateMap(); renderMap(); setupControls(); updateHUD();
             log(`Modo Estratégico: ${selectedFaction.toUpperCase()}`);
 
-            // INICIA O TUTORIAL NA PRIMEIRA RODADA
             state.isTutorial = true;
             state.tutStep = 1;
             document.getElementById('tutorial-banner').style.display = 'block';
             updateTutorialAnim();
+            
+            // Inicia o Relógio do Desafio!
+            startTimer();
         }
 
-        // FUNÇÃO DE ANIMAÇÃO DO TUTORIAL
         function updateTutorialAnim() {
             if(!state.isTutorial) return;
             const banner = document.getElementById('tutorial-banner');
             
-            // Limpa as animações antigas
             document.getElementById('action-buttons').classList.remove('tutorial-glow');
             document.getElementById('map').classList.remove('tutorial-glow');
             document.getElementById('btn-end').classList.remove('tutorial-glow');
@@ -353,12 +418,12 @@
             factions[state.faction].actions.forEach(act => {
                 const btn = document.createElement('button');
                 btn.className = 'action-btn'; 
-                btn.innerText = act.name;
+                btn.innerHTML = act.name; 
                 btn.dataset.id = act.id;
 
                 btn.onclick = () => {
                     if (state.lockedActionId && state.lockedActionId !== act.id) { 
-                        log(`🛑 Foco já definido! Você não pode trocar para "${act.name}" neste mês.`); 
+                        log(`🛑 Foco já definido! Você não pode trocar para outro tipo de ação neste mês.`); 
                         return; 
                     }
 
@@ -368,7 +433,6 @@
                         state.selectedAction = act; 
                         btn.classList.add('active'); 
 
-                        // Avança Tutorial se escolheu ferramenta
                         if(state.isTutorial && state.tutStep === 1) {
                             state.tutStep = 2;
                             updateTutorialAnim();
@@ -382,7 +446,6 @@
                                 state.lockedActionId = act.id; 
                                 updateHUD();
 
-                                // Avança Tutorial pulando a parte do mapa (já que foi um efeito direto)
                                 if(state.isTutorial && state.tutStep === 1) {
                                     state.tutStep = 3;
                                     updateTutorialAnim();
@@ -455,7 +518,6 @@
 
             renderMap(); updateHUD();
 
-            // Avança o Tutorial após ação bem-sucedida no mapa
             if(successAction && state.isTutorial && state.tutStep === 2) {
                 state.tutStep = 3;
                 updateTutorialAnim();
@@ -503,7 +565,6 @@
         function clearTiles(type) { state.map.forEach((cell, i) => { if (cell === type) state.map[i] = 'empty'; }); }
 
         function processTurnEnd() { 
-            // Fecha Tutorial se clicou em passar turno
             if(state.isTutorial && state.tutStep === 3) {
                 state.tutStep = 4;
                 updateTutorialAnim();
@@ -609,11 +670,93 @@
             });
         }
 
-        function checkWinLoss() {
-            if (state.urbanFood <= 0) { alert("GAME OVER: A cidade entrou em colapso completo por inanição."); openScreen('main-menu'); } 
-            else if (state.sustainability <= 0) { alert("GAME OVER: Desastre irreversível. O solo virou areia e os rios secaram."); openScreen('main-menu'); } 
-            else if (state.popularSupport <= 0) { alert("GAME OVER: O povo se revoltou e sua facção perdeu o controle da região."); openScreen('main-menu'); } 
-            else if (factions[state.faction].winCondition()) { alert(`🏆 FIM DE JOGO! A matriz ${state.faction.toUpperCase()} venceu a disputa pela terra!`); openScreen('main-menu'); }
+        // LÓGICA DE VITÓRIA COM INTEGRAÇÃO AO FIREBASE E SALVAMENTO DE NOME
+        async function checkWinLoss() {
+            if (state.urbanFood <= 0) { stopTimer(); alert("GAME OVER: A cidade entrou em colapso completo por inanição."); openScreen('main-menu'); } 
+            else if (state.sustainability <= 0) { stopTimer(); alert("GAME OVER: Desastre irreversível. O solo virou areia e os rios secaram."); openScreen('main-menu'); } 
+            else if (state.popularSupport <= 0) { stopTimer(); alert("GAME OVER: O povo se revoltou e sua facção perdeu o controle da região."); openScreen('main-menu'); } 
+            else if (factions[state.faction].winCondition()) { 
+                stopTimer();
+                let m = Math.floor(timeElapsed / 60).toString().padStart(2, '0');
+                let s = (timeElapsed % 60).toString().padStart(2, '0');
+                
+                // Pede o nome do jogador para salvar no banco
+                let nomeJogador = prompt(`🏆 VITÓRIA! Você venceu com a matriz ${state.faction.toUpperCase()} em ${m}:${s}!\n\nDigite seu nome ou apelido para o Ranking Global:`);
+                
+                // Se o jogador digitou um nome e o Firebase carregou corretamente
+                if (nomeJogador && nomeJogador.trim() !== "" && window.bancoDeDados) {
+                    try {
+                        log("Salvando seu tempo na nuvem...");
+                        // Envia o documento para a coleção 'ranking' no Firestore
+                        await window.bancoDeDados.addDoc(window.bancoDeDados.collection(window.bancoDeDados.db, "ranking"), {
+                            nome: nomeJogador.trim(),
+                            faccao: state.faction,
+                            tempoSegundos: timeElapsed,
+                            tempoFormatado: `${m}:${s}`,
+                            data: new Date().toLocaleDateString()
+                        });
+                        alert("Seu tempo foi salvo no Hall da Fama com sucesso!");
+                    } catch (e) {
+                        console.error("Erro ao salvar no Firebase: ", e);
+                        alert("Infelizmente não foi possível salvar no ranking online agora.");
+                    }
+                }
+                openScreen('main-menu'); 
+            }
+        }
+
+        // LÓGICA PARA PUXAR A LISTA DOS TOP 10 DO FIREBASE E MOSTRAR NO MENU
+        async function abrirRanking() {
+            openScreen('ranking-menu');
+            const lista = document.getElementById('ranking-list');
+            lista.innerHTML = "<li style='text-align: center;'>Conectando ao banco de dados... 🛰️</li>";
+
+            if (!window.bancoDeDados) {
+                lista.innerHTML = "<li style='color: #e74c3c; text-align: center;'>Erro: Sistema de Ranking offline ou não configurado.</li>";
+                return;
+            }
+
+            try {
+                // Prepara a consulta: Pega da coleção "ranking", ordena do menor tempo para o maior, limite de 10
+                const q = window.bancoDeDados.query(
+                    window.bancoDeDados.collection(window.bancoDeDados.db, "ranking"), 
+                    window.bancoDeDados.orderBy("tempoSegundos", "asc"), 
+                    window.bancoDeDados.limit(10)
+                );
+                
+                // Dispara a consulta na nuvem
+                const querySnapshot = await window.bancoDeDados.getDocs(q);
+                
+                // Limpa a mensagem de "Carregando"
+                lista.innerHTML = ""; 
+                
+                let posicao = 1;
+                // Para cada jogador retornado, desenha um item na lista HTML
+                querySnapshot.forEach((doc) => {
+                    const dados = doc.data();
+                    let icone = dados.faccao === 'agro' ? '🏭' : (dados.faccao === 'familiar' ? '🚜' : '👨‍🌾');
+                    
+                    lista.innerHTML += `
+                        <li style="margin-bottom: 12px; border-bottom: 1px solid #34495e; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <b style="color:#f39c12; font-size: 16px;">#${posicao}</b> - <b style="font-size: 16px;">${dados.nome}</b><br>
+                                <small style="color: #95a5a6; margin-left: 25px;">${icone} ${dados.faccao.toUpperCase()}</small>
+                            </div>
+                            <div style="color:#2ecc71; font-weight: bold; font-size: 16px;">
+                                ⏱️ ${dados.tempoFormatado}
+                            </div>
+                        </li>`;
+                    posicao++;
+                });
+
+                if(lista.innerHTML === "") {
+                    lista.innerHTML = "<li style='text-align: center;'>Nenhum vencedor ainda. Seja o primeiro a dominar a terra!</li>";
+                }
+
+            } catch (e) {
+                console.error("Erro ao puxar ranking: ", e);
+                lista.innerHTML = "<li style='color: #e74c3c; text-align: center;'>Falha ao carregar o Hall da Fama. Verifique se o Cloud Firestore está criado e com as Regras de leitura ativas no Console do Firebase.</li>";
+            }
         }
 
         function log(msg) {
